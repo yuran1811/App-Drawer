@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<link rel="icon" href="https://i.pinimg.com/originals/1b/c4/97/1bc49707d93839ea0acf6af5e69f14d2.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+	<link rel="stylesheet" href="https://github.com/yuran1811/Yuran-Web-Projects/blob/main/AppDrawer/1.css"/>
+	<title>App Drawer</title>
+</head>
+<body>
+	<div class="title">
+		<h1>App Drawer</h1>
+		<ul>
+			<li><a target="_blank" href="https://github.com/yuran1811/Yuran-Web-Projects/tree/main/AppDrawer"><i class="fab fa-github fa-3x"></i></a></li>
+		</ul>
+	</div>
+	<div class="main">
+		<div class="canvas"> <canvas id="draw" height="500px" width="900px"></canvas> </div>
+		<div class="tool-container">
+			<button class="tool-btn" id="switch-mode"><em><strong>Switch Mode</strong></em></button>
+			<button class="tool-btn" id="reset">Reset</button>
+			<button class="tool-btn change" id="line">Line</button>
+			<button class="tool-btn change btn-active" id="pen">Pen</button>
+
+			<label>
+				Color:
+				<input class="tool-btn" id="color" type="color" name="favcolor" value="#000000">
+			</label>
+
+			<label>
+				Size:				
+				<input class="tool-btn" id="size" type="number" placeholder="Change the size" value="10" min="1" max="400">
+			</label>
+
+			<div class="resize">
+				<label>
+					Width:
+					<input class="tool-btn" id="w-size" type="number" placeholder="width" value="900" min="50" max="1200">
+				</label>
+				<br>
+				<label>
+					Height:
+					<input class="tool-btn" id="h-size" type="number" placeholder="height" value="500" min="50" max="700">
+				</label>
+				<button class="tool-btn" id="resize">Resize</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="https://github.com/yuran1811/Yuran-Web-Projects/blob/main/AppDrawer/1.js"></script>
+</html>
