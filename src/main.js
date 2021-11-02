@@ -103,7 +103,7 @@ ButtonClear.addEventListener('click', (e) =>
 	penPoint_status = penLine_status = 0;
 	Reset();
 });
-document.querySelector('#resize').addEventListener('click', Reset());
+document.querySelector('#resize').addEventListener('click', (e) => Reset());
 
 
 // Button When Click
