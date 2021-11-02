@@ -1,0 +1,113 @@
+:root
+{
+	--heading-hover-text: -webkit-linear-gradient(#2A6748, #18734B);
+	--heading-hover: linear-gradient(35deg, #A3CBEB, #C7E9A8);
+	--border-color: black;
+	--color-canvas: white;
+}
+
+* {box-sizing: border-box;}
+
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+.dark
+{
+	--heading-hover: linear-gradient(35deg, #497397, #9381A2, #DD88A0);
+	--heading-hover-text: -webkit-linear-gradient(#EAE5C9, #6CC6CB);
+	--border-color: white;
+	--color-canvas: #E6E6E6;
+	background-color: #222;
+	color: #e6e6e6;
+}
+
+
+/*Title*/
+.title {
+	width: 100%;
+	height: 80px;
+}
+
+h1
+{
+	font-family: 'Trebuchet MS', sans-serif;
+	background: var(--heading-hover-text);
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+
+	position: absolute;
+	padding: 5px 10px;
+	margin: 1%;
+	width: 20%;
+	left: 42%;
+	right: 38%;
+}
+
+h1::before
+{  
+	transform: scaleX(0);
+	transform-origin: bottom right;
+}
+
+h1:hover::before
+{
+	transform: scaleX(1);
+	transform-origin: bottom left;
+}
+
+h1::before
+{
+	background: var(--heading-hover);
+	content: " ";
+	display: block;
+	inset: 0 0 0 0;
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	transition: transform 0.3s ease;
+	z-index: -1;
+}
+
+ul {list-style-type: none;}
+.fa-github {background-color: white; border-radius: 50%; padding: 2px;}
+a:link, a:visited, a:active {color: black;}
+
+
+/*Main*/
+#draw
+{
+	border: 1px solid black;
+	cursor: pointer;
+	background-color: var(--color-canvas);
+}
+
+.main {
+	display: flex;
+	flex-direction: row;
+}
+
+/*Tool Container*/
+.tool-container
+{
+	align-content: space-between;
+	align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	flex: 20%;
+	justify-content: flex-start;
+}
+
+label {margin: 0px 5px;}
+.tool-btn {
+	border-radius: 50px;
+	margin: 5px 5px;
+	cursor: pointer;
+	border-style: none;
+	padding: 5px;
+}
+.tool-btn:hover, .btn-active {background-color: #FF7D7D;}
+
+#color {border-radius: 0;
+#size {width: 50px;}
