@@ -1,14 +1,9 @@
-let canvas = document.querySelector('#draw');
-
-let penPoint_status = false;
-let penLine_status = false;
-
+const canvas = document.querySelector('#draw');
 const pen = canvas.getContext('2d');
 pen.fillStyle = 'black';
 
-let lineArray = [];
-let lineArray_index = 0;
-
+var penPoint_status = false;
+var penLine_status = false;
 var pointSize = 10;
 
 
@@ -31,7 +26,7 @@ function Pen_drawFree(e, isDown)
 	Pen_drawPoint(clientX - react.left, clientY - react.top);
 }
 
-let PenDraw = document.querySelector('#pen');
+const PenDraw = document.querySelector('#pen');
 PenDraw.addEventListener('click', (e) =>
 {
 	let isDown = false;
@@ -44,7 +39,7 @@ PenDraw.addEventListener('click', (e) =>
 
 
 // Theme
-let isDark = 0;
+var isDark = 0;
 const Mode = document.querySelector('#switch-mode');
 Mode.addEventListener('click', (e) => {
 	document.body.classList.toggle("dark");
@@ -61,7 +56,7 @@ Mode.addEventListener('click', (e) => {
 
 
 // Draw Line
-let LineDraw = document.querySelector('#line');
+const LineDraw = document.querySelector('#line');
 LineDraw.addEventListener('click', (e) =>
 {
 	penLine_status = true;
@@ -79,7 +74,6 @@ LineDraw.addEventListener('click', (e) =>
 	{
 		if (!penLine_status) return;
 		const react = canvas.getBoundingClientRect();
-
 		const {clientX, clientY} = e;
 		pen.beginPath();
 		pen.lineWidth = document.querySelector('#size').value;
