@@ -1,114 +1,148 @@
-const canvas = document.querySelector('#draw');
-const pen = canvas.getContext('2d');
-pen.fillStyle = 'black';
+const $ = document.querySelector.bind(document);
+const $$ = document.querySelectorAll.bind(document);
 
-var penPoint_status = false;
-var penLine_status = false;
-var pointSize = 10;
+const canvas = $('#draw');
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = 'black';
 
+let penPoint_status = false;
+let penLine_status = false;
+let isDown = false;
+let prevX, prevY;
 
-// Pen
-function Pen_drawPoint(x, y)
-{
+// Draw Functions
+function drawPoint(x, y) {
 	if (!penPoint_status) return;
 	const circle = new Path2D();
-	pointSize = document.querySelector('#size').value;
-	circle.arc(x, y, pointSize, 0, 2 * Math.PI);
-	pen.fillStyle = document.querySelector('#color').value;
-	pen.fill(circle);
+	circle.arc(x, y, $('#size').value, 0, 2 * Math.PI);
+	ctx.fillStyle = $('#color').value;
+	ctx.fill(circle);
 }
 
-function Pen_drawFree(e, isDown)
-{	
-	if (!isDown) return;
-	const {clientX, clientY} = e;
+function drawLine(x1, y1, x2, y2) {
+	ctx.beginPath();
+	ctx.strokeStyle = $('#color').value;
+	ctx.lineWidth = $('#size').value * 2;
+	ctx.moveTo(x1, y1);
+	ctx.lineTo(x2, y2);
+	ctx.stroke();
+}
+
+// Pen Function
+function penMouseDown(e) {
+	isDown = 1;
+	prevX = e.offsetX;
+	prevY = e.offsetY;
+	drawPoint(prevX, prevY);
+}
+
+function penMouseUp() {
+	isDown = 0;
+	prevX = undefined;
+	prevY = undefined;
+}
+
+function penMouseMove(e) {
+	const x2 = e.offsetX;
+	const y2 = e.offsetY;
+
+	if (isDown) {
+		drawPoint(x2, y2);
+		drawLine(prevX, prevY, x2, y2);
+	}
+
+	prevX = x2;
+	prevY = y2;
+}
+
+// Line Function
+function lineMouseDown(e) {
+	const { clientX, clientY } = e;
+	prevX = clientX;
+	prevY = clientY;
+}
+
+function lineClick(e) {
+	if (!penLine_status) return;
 	const react = canvas.getBoundingClientRect();
-	Pen_drawPoint(clientX - react.left, clientY - react.top);
+	const { clientX, clientY } = e;
+	ctx.beginPath();
+	ctx.lineWidth = $('#size').value * 2;
+	ctx.strokeStyle = $('#color').value;
+	ctx.moveTo(prevX - react.left, prevY - react.top);
+	ctx.lineTo(clientX - react.left, clientY - react.top);
+	ctx.stroke();
 }
 
-const PenDraw = document.querySelector('#pen');
-PenDraw.addEventListener('click', (e) =>
-{
-	let isDown = false;
+// Draw Usage
+const drawUsingPen = $('#pen');
+drawUsingPen.addEventListener('click', () => {
 	penPoint_status = true;
 	penLine_status = false;
-	canvas.addEventListener('mouseup', (e) => {isDown = false;})
-	canvas.addEventListener('mousedown', (e) => {isDown = 1; Pen_drawFree(e, isDown);});
-	canvas.addEventListener('mousemove', (e) => {Pen_drawFree(e, isDown)});
-})
 
+	canvas.removeEventListener('mousedown', lineMouseDown);
+	canvas.removeEventListener('click', lineClick);
 
-// Theme
-var isDark = 0;
-const Mode = document.querySelector('#switch-mode');
-Mode.addEventListener('click', (e) => {
-	document.body.classList.toggle("dark");
-	if (isDark)
-	{
-		Mode.innerHTML = "Dark";
-		isDark = 0;
-	} else
-	{
-		Mode.innerHTML = "Light";
-		isDark = 1;
-	}
+	canvas.addEventListener('mousedown', penMouseDown);
+	document.addEventListener('mouseup', penMouseUp);
+	canvas.addEventListener('mousemove', penMouseMove);
 });
 
-
 // Draw Line
-const LineDraw = document.querySelector('#line');
-LineDraw.addEventListener('click', (e) =>
-{
+$('#line').addEventListener('click', () => {
 	penLine_status = true;
 	penPoint_status = false;
 
-	var mouseX = 0;
-	var mouseY = 0;
-	canvas.addEventListener('mousedown', (e) =>
-	{
-		const {clientX, clientY} = e;
-		mouseX = clientX;
-		mouseY = clientY;
-	})
-	canvas.addEventListener('click', (e) =>
-	{
-		if (!penLine_status) return;
-		const react = canvas.getBoundingClientRect();
-		const {clientX, clientY} = e;
-		pen.beginPath();
-		pen.lineWidth = document.querySelector('#size').value;
-		pen.strokeStyle = document.querySelector('#color').value;
-		pen.moveTo(mouseX - react.left, mouseY - react.top);
-		pen.lineTo(clientX - react.left, clientY - react.top);
-		pen.stroke();
-	})
-})
+	canvas.removeEventListener('mousedown', penMouseDown);
+	document.removeEventListener('mouseup', penMouseUp);
+	canvas.removeEventListener('mousemove', penMouseMove);
 
+	canvas.addEventListener('mousedown', lineMouseDown);
+	canvas.addEventListener('click', lineClick);
+});
 
 // Clear & Resize
 function Reset() {
-	canvas.width = document.querySelector('#w-size').value;
-	canvas.height = document.querySelector('#h-size').value;
+	canvas.width = $('#w-size').value;
+	canvas.height = $('#h-size').value;
+	const lastItemSelect = $('.btn--active');
+	if (lastItemSelect) {
+		lastItemSelect.className = lastItemSelect.className.replace(
+			'btn--active',
+			''
+		);
+	}
 }
-
-const ButtonClear = document.querySelector('#reset');
-ButtonClear.addEventListener('click', (e) =>
-{
+$('#reset').addEventListener('click', () => {
 	penPoint_status = penLine_status = 0;
 	Reset();
 });
-document.querySelector('#resize').addEventListener('click', (e) => Reset());
-
+$('#resize').addEventListener('click', () => Reset());
 
 // Button When Click
-const btnContainer = document.querySelector('.tool-container');
-var btnList = btnContainer.getElementsByClassName("change");
-btnContainer.addEventListener('mouseover', function() {
-	for (var i = 0; i < btnList.length; i++) {
-		btnList[i].addEventListener("click", function() {
-			var current = document.getElementsByClassName("btn-active");
-			current[0].className = current[0].className.replace(" btn-active", "");
-			this.className += " btn-active";
-		});
+$$('.btn--change').forEach((item) => {
+	item.addEventListener('click', (e) => {
+		const lastItemSelect = $('.btn--active');
+		if (lastItemSelect) {
+			lastItemSelect.className = lastItemSelect.className.replace(
+				'btn--active',
+				''
+			);
+		}
+		e.target.className += ' btn--active';
+	});
+});
+
+// Theme Toggle
+let isDark = 0;
+const Mode = $('#switch-mode');
+Mode.addEventListener('click', (e) => {
+	document.body.classList.toggle('dark');
+	if (isDark) {
+		Mode.innerHTML = 'Dark';
+		isDark = 0;
+	} else {
+		Mode.innerHTML = 'Light';
+		isDark = 1;
 	}
 });
