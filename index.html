@@ -1,49 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="utf-8"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1"/>
-	<link rel="icon" href="https://i.pinimg.com/originals/1b/c4/97/1bc49707d93839ea0acf6af5e69f14d2.png"/>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-	<link rel="stylesheet" type="text/css" href="src/style.css"/>
-	<title>App Drawer</title>
-</head>
-<body>
-	<div class="title">
-		<h1>App Drawer</h1>
-		<ul>
-			<li><a target="_blank" href="https://github.com/yuran1811/App-Drawer"><i class="fab fa-github fa-3x"></i></a></li>
-		</ul>
-	</div>
-	<div class="main">
-		<div class="canvas"><canvas id="draw" height="500" width="900"></canvas></div>
-		<div class="tool-container">
-			<button class="tool-btn" id="switch-mode"><em><strong>Switch Mode</strong></em></button>
-			<button class="tool-btn" id="reset">Reset</button>
-			<button class="tool-btn change" id="line">Line</button>
-			<button class="tool-btn change btn-active" id="pen">Pen</button>
-			<label>
-				Color:
-				<input class="tool-btn" id="color" type="color" name="favcolor" value="#000000">
-			</label>
-			<label>
-				Size:				
-				<input class="tool-btn" id="size" type="number" placeholder="Change the size" value="10" min="1" max="400">
-			</label>
-			<div class="resize">
-				<label>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link
+			rel="icon"
+			href="https://i.pinimg.com/originals/1b/c4/97/1bc49707d93839ea0acf6af5e69f14d2.png"
+		/>
+		<!-- Font Awesome -->
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+		/>
+		<!-- GG Font -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- External CSS -->
+		<link rel="stylesheet" type="text/css" href="src/style.css" />
+		<title>App Drawer</title>
+	</head>
+	<body>
+		<div class="header">
+			<h1>App Drawer</h1>
+			<a
+				class="ghub"
+				target="_blank"
+				href="https://github.com/yuran1811/App-Drawer"
+				><i class="fab fa-github fa-3x"></i
+			></a>
+		</div>
+
+		<!-- Main -->
+		<div class="main">
+			<div class="canvas">
+				<canvas id="draw" height="500" width="900"></canvas>
+			</div>
+
+			<!-- <div class="menu">
+				<i class="fa-2x fas fa-times menu-ico"></i>
+				<i class="fa-2x fas fa-bars menu-ico"></i>
+			</div> -->
+
+			<div class="tool-container">
+				<div class="tool-btn" id="switch-mode">Switch Mode</div>
+				<div class="tool-btn" id="reset">Reset</div>
+				<div class="tool-btn btn--change" id="line">Line</div>
+				<div class="tool-btn btn--change" id="pen">Pen</div>
+
+				<div class="tool-btn">
+					Color
+					<input
+						id="color"
+						type="color"
+						name="favcolor"
+						value="#000000"
+					/>
+				</div>
+
+				<div class="tool-btn">
+					Size
+					<input
+						id="size"
+						type="number"
+						value="5"
+						min="1"
+						max="400"
+						placeholder="Change the size"
+					/>
+				</div>
+
+				<div class="tool-btn resize-container">
 					Width:
-					<input class="tool-btn" id="w-size" type="number" placeholder="width" value="900" min="50" max="1200">
-				</label>
-				<br>
-				<label>
+					<input
+						id="w-size"
+						type="number"
+						value="900"
+						min="50"
+						max="1200"
+						placeholder="width"
+					/>
 					Height:
-					<input class="tool-btn" id="h-size" type="number" placeholder="height" value="500" min="50" max="700">
-				</label>
-				<button class="tool-btn" id="resize">Resize</button>
+					<input
+						id="h-size"
+						type="number"
+						value="500"
+						min="50"
+						max="700"
+						placeholder="height"
+					/>
+					<span class="tool-btn" id="resize">Resize</span>
+				</div>
 			</div>
 		</div>
-	</div>
-	<script src="src/main.js"></script>
-</body>
+		<script src="src/main.js"></script>
+	</body>
 </html>
