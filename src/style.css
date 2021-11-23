@@ -163,3 +163,12 @@ a:active {
 #resize:hover {
 	padding: 0 5px;
 }
+
+#upload {
+	width: auto;
+}
+#upload input {
+	font-size: 12px;
+	width: auto;
+	font-family: 'Patrick Hand', cursive;
+}

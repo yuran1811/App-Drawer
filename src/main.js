@@ -10,11 +10,10 @@ ctx.fillStyle = 'black';
 const sizeSelect = $('#size');
 const colorSelect = $('#color');
 
-let lineStack = [];
-let lineStackIndex = -1;
-
 let linePop = [];
+let lineStack = [];
 let linePopIndex = -1;
+let lineStackIndex = -1;
 
 let penPoint_status = false;
 let penLine_status = false;
@@ -113,8 +112,21 @@ function lineClick(e) {
 }
 
 // Draw Usage
+const removeAllEvent = () => {
+	document.removeEventListener('mouseup', penMouseUp);
+	canvas.removeEventListener('mousedown', penMouseDown);
+	canvas.removeEventListener('mousemove', penMouseMove);
+	canvas.removeEventListener('mousemove', eraseFunc);
+	canvas.removeEventListener('mousedown', lineMouseDown);
+	canvas.removeEventListener('click', lineClick);
+};
+
 const eraseFunc = (e) => {
 	penMouseMove(e, sizeSelect.value * 2, '#ffffff');
+};
+
+const fileLocate = (e) => {
+	ctx.drawImage(e.target.imgData, e.offsetX, e.offsetY);
 };
 
 const drawUsePen = () => {
@@ -124,11 +136,13 @@ const drawUsePen = () => {
 	canvas.removeEventListener('mousedown', lineMouseDown);
 	canvas.removeEventListener('click', lineClick);
 	canvas.removeEventListener('mousemove', eraseFunc);
+	canvas.removeEventListener('click', fileLocate);
 
 	canvas.addEventListener('mousedown', penMouseDown);
 	document.addEventListener('mouseup', penMouseUp);
 	canvas.addEventListener('mousemove', penMouseMove);
 };
+
 const drawUseLine = () => {
 	penLine_status = true;
 	penPoint_status = false;
@@ -137,6 +151,7 @@ const drawUseLine = () => {
 	document.removeEventListener('mouseup', penMouseUp);
 	canvas.removeEventListener('mousemove', penMouseMove);
 	canvas.removeEventListener('mousemove', eraseFunc);
+	canvas.removeEventListener('click', fileLocate);
 
 	canvas.addEventListener('mousedown', lineMouseDown);
 	canvas.addEventListener('click', lineClick);
@@ -177,6 +192,7 @@ function Reset() {
 	document.removeEventListener('mouseup', penMouseUp);
 	canvas.removeEventListener('mousemove', penMouseMove);
 }
+
 $('#reset').addEventListener('click', () => {
 	penPoint_status = penLine_status = 0;
 	Reset();
@@ -194,6 +210,7 @@ $('#reset').addEventListener('click', () => {
 	canvas.height = 500;
 	ctx.fillStyle = 'black';
 });
+
 $('#resize').addEventListener('click', () => {
 	localStorage.setItem('img', canvas.toDataURL());
 	Reset();
@@ -202,6 +219,21 @@ $('#resize').addEventListener('click', () => {
 	img.src = dataURL;
 	img.onload = function () {
 		ctx.drawImage(img, 0, 0);
+	};
+});
+
+// Get Img from file
+const reader = new FileReader();
+$('#file-upload').addEventListener('change', (e) => {
+	const files = e.target.files;
+	let img = new Image();
+	img.src = URL.createObjectURL(files[0]);
+	img.onload = function () {
+		$('#upload button').addEventListener('click', () => {
+			removeAllEvent();
+			canvas.imgData = img;
+			canvas.addEventListener('click', fileLocate);
+		});
 	};
 });
 
