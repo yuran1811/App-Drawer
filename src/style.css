@@ -1,11 +1,12 @@
 :root {
-	--border-color: black;
-	--canvas-color: white;
+	--border-color: #000000;
+	--canvas-color: #ffffff;
 
 	--background: white;
 	--color: #222;
 
 	--tool-btn-hover: #ffc2c2;
+	--all-tool-background: rgba(233, 233, 233, 0.8);
 }
 
 * {
@@ -27,6 +28,7 @@ body.dark {
 	--color: #e6e6e6;
 
 	--tool-btn-hover: #af4343;
+	--all-tool-background: rgba(78, 78, 78, 0.8);
 }
 
 /*Header*/
@@ -77,6 +79,10 @@ a:active {
 	border: 1px solid rgb(143, 143, 143);
 	background-color: var(--canvas-color);
 	cursor: pointer;
+	position: absolute;
+	left: 0;
+	right: 0;
+	margin: auto;
 }
 
 .main {
@@ -84,41 +90,40 @@ a:active {
 }
 
 /* Menu */
-.menu {
+.menu-ico {
 	position: fixed;
 	right: 25px;
-}
-
-.menu-ico {
-	position: absolute;
-	right: 0;
 	cursor: pointer;
+	transition: all 0.5s ease;
+	z-index: 100;
+	background-color: var(--background);
+	border-radius: 50%;
 }
-
-.fa-times {
-	display: none;
-}
-
-.fa-times.active {
-	display: none;
-}
-.fa-times.active .fa-bars {
-	display: block;
-}
-
-.fa-bars.active {
-	display: none;
-}
-.fa-bars.active .fa-times {
-	display: block;
+.menu-ico.active {
+	transform: rotateZ(-135deg);
 }
 
 /*Tool Container*/
+.all-tool {
+	position: fixed;
+	right: 0;
+	margin: 65px 25px 0 0;
+	transform: translateX(200%);
+	transition: all 0.5s ease;
+}
+
+.all-tool.active {
+	transform: translateX(0);
+}
+
 .tool-container {
 	display: flex;
 	flex-flow: column wrap;
-	align-items: flex-start;
-	justify-content: flex-start;
+	align-items: flex-end;
+	justify-content: flex-end;
+	width: auto;
+	background-color: var(--all-tool-background);
+	border-radius: 10px;
 }
 
 .tool-btn {
