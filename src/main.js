@@ -75,14 +75,14 @@ function lineClick(e) {
 	const react = canvas.getBoundingClientRect();
 	const { clientX, clientY } = e;
 	ctx.beginPath();
-	ctx.lineWidth = $('#size').value * 2;
+	ctx.lineWidth = $('#size').value * 2 - 2;
 	ctx.strokeStyle = $('#color').value;
 	ctx.moveTo(prevX - react.left, prevY - react.top);
 	ctx.lineTo(clientX - react.left, clientY - react.top);
 	ctx.stroke();
 
 	lineStack.push([
-		ctx.lineWidth,
+		ctx.lineWidth + 2,
 		prevX - react.left,
 		prevY - react.top,
 		clientX - react.left,
@@ -230,7 +230,7 @@ window.addEventListener('keydown', (e) => {
 		lineStackIndex++;
 
 		ctx.beginPath();
-		ctx.lineWidth = lineItem[0];
+		ctx.lineWidth = lineItem[0] - 2;
 		ctx.strokeStyle = lineItem[5];
 		ctx.moveTo(lineItem[1], lineItem[2]);
 		ctx.lineTo(lineItem[3], lineItem[4]);
