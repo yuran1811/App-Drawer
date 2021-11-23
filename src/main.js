@@ -266,13 +266,9 @@ Mode.addEventListener('click', () => {
 });
 
 // Menu
-$('.menu-ico').addEventListener('mouseover', (e) => {
-	e.target.classList.add('active');
-	$('.all-tool').classList.add('active');
-});
 $('.menu-ico').addEventListener('click', (e) => {
-	e.target.classList.remove('active');
-	$('.all-tool').classList.remove('active');
+	e.target.classList.toggle('active');
+	$('.all-tool').classList.toggle('active');
 });
 
 $('.tool-container').addEventListener('dblclick', () => {

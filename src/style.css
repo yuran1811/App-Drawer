@@ -122,6 +122,7 @@ a:active {
 	align-items: flex-end;
 	justify-content: flex-end;
 	width: auto;
+	height: 60%;
 	background-color: var(--all-tool-background);
 	border-radius: 10px;
 }
