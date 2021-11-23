@@ -1,9 +1,17 @@
+'use strict';
+
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
 const canvas = $('#draw');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'black';
+
+let lineStack = [];
+let lineStackIndex = -1;
+
+let linePop = [];
+let linePopIndex = -1;
 
 let penPoint_status = false;
 let penLine_status = false;
@@ -21,8 +29,8 @@ function drawPoint(x, y) {
 
 function drawLine(x1, y1, x2, y2) {
 	ctx.beginPath();
-	ctx.strokeStyle = $('#color').value;
 	ctx.lineWidth = $('#size').value * 2;
+	ctx.strokeStyle = $('#color').value;
 	ctx.moveTo(x1, y1);
 	ctx.lineTo(x2, y2);
 	ctx.stroke();
@@ -72,11 +80,20 @@ function lineClick(e) {
 	ctx.moveTo(prevX - react.left, prevY - react.top);
 	ctx.lineTo(clientX - react.left, clientY - react.top);
 	ctx.stroke();
+
+	lineStack.push([
+		ctx.lineWidth,
+		prevX - react.left,
+		prevY - react.top,
+		clientX - react.left,
+		clientY - react.top,
+		ctx.strokeStyle,
+	]);
+	lineStackIndex++;
 }
 
 // Draw Usage
-const drawUsingPen = $('#pen');
-drawUsingPen.addEventListener('click', () => {
+$('#pen').addEventListener('click', () => {
 	penPoint_status = true;
 	penLine_status = false;
 
@@ -88,7 +105,6 @@ drawUsingPen.addEventListener('click', () => {
 	canvas.addEventListener('mousemove', penMouseMove);
 });
 
-// Draw Line
 $('#line').addEventListener('click', () => {
 	penLine_status = true;
 	penPoint_status = false;
@@ -105,6 +121,7 @@ $('#line').addEventListener('click', () => {
 function Reset() {
 	canvas.width = $('#w-size').value;
 	canvas.height = $('#h-size').value;
+
 	const lastItemSelect = $('.btn--active');
 	if (lastItemSelect) {
 		lastItemSelect.className = lastItemSelect.className.replace(
@@ -112,12 +129,40 @@ function Reset() {
 			''
 		);
 	}
+
+	canvas.removeEventListener('mousedown', lineMouseDown);
+	canvas.removeEventListener('click', lineClick);
+	canvas.removeEventListener('mousedown', penMouseDown);
+	document.removeEventListener('mouseup', penMouseUp);
+	canvas.removeEventListener('mousemove', penMouseMove);
 }
 $('#reset').addEventListener('click', () => {
 	penPoint_status = penLine_status = 0;
 	Reset();
+
+	linePopIndex = lineStackIndex = -1;
+	linePop = [];
+	lineStack = [];
+
+	$('#size').value = 5;
+	$('#w-size').value = 900;
+	$('#h-size').value = 500;
+	$('#color').value = '#000000';
+
+	canvas.width = 900;
+	canvas.height = 500;
+	ctx.fillStyle = 'black';
 });
-$('#resize').addEventListener('click', () => Reset());
+$('#resize').addEventListener('click', () => {
+	localStorage.setItem('img', canvas.toDataURL());
+	Reset();
+	let dataURL = localStorage.getItem('img');
+	let img = new Image();
+	img.src = dataURL;
+	img.onload = function () {
+		ctx.drawImage(img, 0, 0);
+	};
+});
 
 // Button When Click
 $$('.btn--change').forEach((item) => {
@@ -144,5 +189,54 @@ Mode.addEventListener('click', (e) => {
 	} else {
 		Mode.innerHTML = 'Light';
 		isDark = 1;
+	}
+});
+
+// Menu
+$('.menu-ico').addEventListener('click', (e) => {
+	e.target.classList.toggle('active');
+	$('.all-tool').classList.toggle('active');
+});
+
+// Undo
+window.addEventListener('keydown', (e) => {
+	if (e.keyCode == 90) {
+		if (lineStackIndex < 0) return;
+		const lineItem = lineStack[lineStackIndex--];
+		lineStack.pop();
+
+		linePop.push(lineItem);
+		linePopIndex++;
+
+		console.log(lineItem);
+
+		ctx.beginPath();
+		ctx.lineWidth = lineItem[0];
+		ctx.strokeStyle = '#ffffff';
+		ctx.moveTo(lineItem[1], lineItem[2]);
+		ctx.lineTo(lineItem[3], lineItem[4]);
+		ctx.stroke();
+
+		ctx.lineWidth = $('#size').value * 2;
+		ctx.strokeStyle = $('#color').value;
+	}
+
+	if (e.keyCode == 89) {
+		if (linePopIndex < 0) return;
+		const lineItem = linePop[linePopIndex--];
+		linePop.pop();
+
+		lineStack.push(lineItem);
+		lineStackIndex++;
+
+		ctx.beginPath();
+		ctx.lineWidth = lineItem[0];
+		ctx.strokeStyle = lineItem[5];
+		ctx.moveTo(lineItem[1], lineItem[2]);
+		ctx.lineTo(lineItem[3], lineItem[4]);
+		ctx.stroke();
+
+		ctx.lineWidth = $('#size').value * 2;
+		ctx.strokeStyle = $('#color').value;
 	}
 });
