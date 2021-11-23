@@ -7,6 +7,9 @@ const canvas = $('#draw');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'black';
 
+const sizeSelect = $('#size');
+const colorSelect = $('#color');
+
 let lineStack = [];
 let lineStackIndex = -1;
 
@@ -19,18 +22,22 @@ let isDown = false;
 let prevX, prevY;
 
 // Draw Functions
-function drawPoint(x, y) {
-	if (!penPoint_status) return;
+const drawHeadLine = (x, y, size, color) => {
 	const circle = new Path2D();
-	circle.arc(x, y, $('#size').value, 0, 2 * Math.PI);
-	ctx.fillStyle = $('#color').value;
+	circle.arc(x, y, size, 0, 2 * Math.PI);
+	ctx.fillStyle = color;
 	ctx.fill(circle);
+};
+
+function drawPoint(x, y, size, color) {
+	if (!penPoint_status) return;
+	drawHeadLine(x, y, size, color);
 }
 
-function drawLine(x1, y1, x2, y2) {
+function drawLine(x1, y1, x2, y2, size, color) {
 	ctx.beginPath();
-	ctx.lineWidth = $('#size').value * 2;
-	ctx.strokeStyle = $('#color').value;
+	ctx.lineWidth = size * 2;
+	ctx.strokeStyle = color;
 	ctx.moveTo(x1, y1);
 	ctx.lineTo(x2, y2);
 	ctx.stroke();
@@ -50,13 +57,13 @@ function penMouseUp() {
 	prevY = undefined;
 }
 
-function penMouseMove(e) {
+function penMouseMove(e, size = sizeSelect.value, color = colorSelect.value) {
 	const x2 = e.offsetX;
 	const y2 = e.offsetY;
 
 	if (isDown) {
-		drawPoint(x2, y2);
-		drawLine(prevX, prevY, x2, y2);
+		drawPoint(x2, y2, size, color);
+		drawLine(prevX, prevY, x2, y2, size, color);
 	}
 
 	prevX = x2;
@@ -75,14 +82,27 @@ function lineClick(e) {
 	const react = canvas.getBoundingClientRect();
 	const { clientX, clientY } = e;
 	ctx.beginPath();
-	ctx.lineWidth = $('#size').value * 2 - 2;
-	ctx.strokeStyle = $('#color').value;
+	ctx.lineWidth = sizeSelect.value * 2;
+	ctx.strokeStyle = colorSelect.value;
 	ctx.moveTo(prevX - react.left, prevY - react.top);
 	ctx.lineTo(clientX - react.left, clientY - react.top);
 	ctx.stroke();
 
+	drawHeadLine(
+		prevX - react.left,
+		prevY - react.top,
+		sizeSelect.value,
+		colorSelect.value
+	);
+	drawHeadLine(
+		clientX - react.left,
+		clientY - react.top,
+		sizeSelect.value,
+		colorSelect.value
+	);
+
 	lineStack.push([
-		ctx.lineWidth + 2,
+		ctx.lineWidth,
 		prevX - react.left,
 		prevY - react.top,
 		clientX - react.left,
@@ -93,31 +113,52 @@ function lineClick(e) {
 }
 
 // Draw Usage
-$('#pen').addEventListener('click', () => {
+const eraseFunc = (e) => {
+	penMouseMove(e, sizeSelect.value * 2, '#ffffff');
+};
+
+const drawUsePen = () => {
 	penPoint_status = true;
 	penLine_status = false;
 
 	canvas.removeEventListener('mousedown', lineMouseDown);
 	canvas.removeEventListener('click', lineClick);
+	canvas.removeEventListener('mousemove', eraseFunc);
 
 	canvas.addEventListener('mousedown', penMouseDown);
 	document.addEventListener('mouseup', penMouseUp);
 	canvas.addEventListener('mousemove', penMouseMove);
-});
-
-$('#line').addEventListener('click', () => {
+};
+const drawUseLine = () => {
 	penLine_status = true;
 	penPoint_status = false;
 
 	canvas.removeEventListener('mousedown', penMouseDown);
 	document.removeEventListener('mouseup', penMouseUp);
 	canvas.removeEventListener('mousemove', penMouseMove);
+	canvas.removeEventListener('mousemove', eraseFunc);
 
 	canvas.addEventListener('mousedown', lineMouseDown);
 	canvas.addEventListener('click', lineClick);
+};
+
+$('#pen').addEventListener('click', drawUsePen);
+$('#line').addEventListener('click', drawUseLine);
+
+// Clear & Resize & Eraser
+$('#eraser').addEventListener('click', () => {
+	penPoint_status = true;
+	penLine_status = false;
+
+	canvas.removeEventListener('mousedown', lineMouseDown);
+	canvas.removeEventListener('click', lineClick);
+	canvas.removeEventListener('mousemove', penMouseMove);
+
+	canvas.addEventListener('mousedown', penMouseDown);
+	document.addEventListener('mouseup', penMouseUp);
+	canvas.addEventListener('mousemove', eraseFunc);
 });
 
-// Clear & Resize
 function Reset() {
 	canvas.width = $('#w-size').value;
 	canvas.height = $('#h-size').value;
@@ -144,10 +185,10 @@ $('#reset').addEventListener('click', () => {
 	linePop = [];
 	lineStack = [];
 
-	$('#size').value = 5;
+	sizeSelect.value = 5;
 	$('#w-size').value = 900;
 	$('#h-size').value = 500;
-	$('#color').value = '#000000';
+	colorSelect.value = '#000000';
 
 	canvas.width = 900;
 	canvas.height = 500;
@@ -181,7 +222,7 @@ $$('.btn--change').forEach((item) => {
 // Theme Toggle
 let isDark = 0;
 const Mode = $('#switch-mode');
-Mode.addEventListener('click', (e) => {
+Mode.addEventListener('click', () => {
 	document.body.classList.toggle('dark');
 	if (isDark) {
 		Mode.innerHTML = 'Dark';
@@ -193,9 +234,18 @@ Mode.addEventListener('click', (e) => {
 });
 
 // Menu
+$('.menu-ico').addEventListener('mouseover', (e) => {
+	e.target.classList.add('active');
+	$('.all-tool').classList.add('active');
+});
 $('.menu-ico').addEventListener('click', (e) => {
-	e.target.classList.toggle('active');
-	$('.all-tool').classList.toggle('active');
+	e.target.classList.remove('active');
+	$('.all-tool').classList.remove('active');
+});
+
+$('.tool-container').addEventListener('dblclick', () => {
+	$('.all-tool').classList.remove('active');
+	$('.menu-ico').classList.remove('active');
 });
 
 // Undo
@@ -208,17 +258,18 @@ window.addEventListener('keydown', (e) => {
 		linePop.push(lineItem);
 		linePopIndex++;
 
-		console.log(lineItem);
-
 		ctx.beginPath();
-		ctx.lineWidth = lineItem[0];
+		ctx.lineWidth = lineItem[0] + 2;
 		ctx.strokeStyle = '#ffffff';
 		ctx.moveTo(lineItem[1], lineItem[2]);
 		ctx.lineTo(lineItem[3], lineItem[4]);
 		ctx.stroke();
 
-		ctx.lineWidth = $('#size').value * 2;
-		ctx.strokeStyle = $('#color').value;
+		drawHeadLine(lineItem[1], lineItem[2], lineItem[0] / 2 + 1, '#ffffff');
+		drawHeadLine(lineItem[3], lineItem[4], lineItem[0] / 2 + 1, '#ffffff');
+
+		ctx.lineWidth = sizeSelect.value * 2;
+		ctx.strokeStyle = colorSelect.value;
 	}
 
 	if (e.keyCode == 89) {
@@ -230,13 +281,16 @@ window.addEventListener('keydown', (e) => {
 		lineStackIndex++;
 
 		ctx.beginPath();
-		ctx.lineWidth = lineItem[0] - 2;
+		ctx.lineWidth = lineItem[0];
 		ctx.strokeStyle = lineItem[5];
 		ctx.moveTo(lineItem[1], lineItem[2]);
 		ctx.lineTo(lineItem[3], lineItem[4]);
 		ctx.stroke();
 
-		ctx.lineWidth = $('#size').value * 2;
-		ctx.strokeStyle = $('#color').value;
+		drawHeadLine(lineItem[1], lineItem[2], lineItem[0] / 2, lineItem[5]);
+		drawHeadLine(lineItem[3], lineItem[4], lineItem[0] / 2, lineItem[5]);
+
+		ctx.lineWidth = sizeSelect.value * 2;
+		ctx.strokeStyle = colorSelect.value;
 	}
 });

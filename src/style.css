@@ -22,7 +22,7 @@ body {
 }
 body.dark {
 	--border-color: white;
-	--canvas-color: #e6e6e6;
+	/* --canvas-color: #e6e6e6; */
 
 	--background: #222;
 	--color: #e6e6e6;
