@@ -31,6 +31,15 @@ body.dark {
 	--all-tool-background: rgba(78, 78, 78, 0.8);
 }
 
+body::-webkit-scrollbar {
+	width: 10px;
+}
+body::-webkit-scrollbar-thumb {
+	background-color: darkgrey;
+	outline: 0.1px solid slategrey;
+	border-radius: 20px;
+}
+
 /*Header*/
 .header {
 	position: relative;
@@ -110,6 +119,7 @@ a:active {
 	margin: 65px 25px 0 0;
 	transform: translateX(200%);
 	transition: all 0.5s ease;
+	width: auto;
 }
 
 .all-tool.active {
@@ -121,8 +131,6 @@ a:active {
 	flex-flow: column wrap;
 	align-items: flex-end;
 	justify-content: flex-end;
-	width: auto;
-	height: 60%;
 	background-color: var(--all-tool-background);
 	border-radius: 10px;
 }
@@ -169,7 +177,7 @@ a:active {
 	width: auto;
 }
 #upload input {
-	font-size: 12px;
+	font-size: 14px;
 	width: auto;
 	font-family: 'Patrick Hand', cursive;
 }

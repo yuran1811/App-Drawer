@@ -44,14 +44,14 @@ function drawLine(x1, y1, x2, y2, size, color) {
 
 // Pen Function
 function penMouseDown(e) {
-	isDown = 1;
+	penPoint_status = isDown = 1;
 	prevX = e.offsetX;
 	prevY = e.offsetY;
 	drawPoint(prevX, prevY);
 }
 
 function penMouseUp() {
-	isDown = 0;
+	penPoint_status = isDown = 0;
 	prevX = undefined;
 	prevY = undefined;
 }
