@@ -3,23 +3,17 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link
-			rel="icon"
-			href="https://i.pinimg.com/originals/1b/c4/97/1bc49707d93839ea0acf6af5e69f14d2.png"
-		/>
-		<!-- Font Awesome -->
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-		/>
-		<!-- GG Font -->
+		<link rel="icon" href="src/img/Logo.png" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap"
 			rel="stylesheet"
 		/>
-		<!-- External CSS -->
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+		/>
 		<link rel="stylesheet" type="text/css" href="src/style.css" />
 		<title>App Drawer</title>
 	</head>
@@ -30,11 +24,20 @@
 				class="ghub"
 				target="_blank"
 				href="https://github.com/yuran1811/App-Drawer"
-				><i class="fab fa-github fa-3x"></i
-			></a>
+			>
+				<img
+					style="
+						width: 50px;
+						height: 50px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					"
+					src="./src/ico/github.svg"
+					alt="github"
+				/>
+			</a>
 		</div>
-
-		<!-- Main -->
 		<div class="main">
 			<div class="canvas">
 				<canvas id="draw" height="500" width="900"></canvas>
@@ -42,7 +45,6 @@
 
 			<div class="menu">
 				<i class="fa-3x fas fa-plus-circle menu-ico"></i>
-
 				<div class="all-tool">
 					<div class="tool-container">
 						<div class="tool-btn" id="switch-mode">Switch Mode</div>
