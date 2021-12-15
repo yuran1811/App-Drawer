@@ -59,10 +59,10 @@ h1 {
 h1::after {
 	content: ' ';
 	position: absolute;
-	bottom: 0;
-	height: 5px;
-	width: 0;
 	left: 50%;
+	bottom: 0;
+	width: 0;
+	height: 5px;
 	transform: translateX(-50%);
 	background-color: var(--color);
 	transition: all 0.5s ease;
@@ -90,8 +90,8 @@ a:active {
 	background-color: var(--canvas-color);
 	cursor: pointer;
 	position: absolute;
-	left: 0;
 	right: 0;
+	left: 0;
 	margin: auto;
 }
 
@@ -138,9 +138,8 @@ a:active {
 .tool-btn {
 	border: 1px solid var(--border-color);
 	margin: 7px;
-	cursor: pointer;
 	padding: 5px;
-
+	cursor: pointer;
 	position: relative;
 }
 .tool-btn > input {
@@ -163,7 +162,6 @@ a:active {
 	content: '';
 	position: absolute;
 	left: -30px;
-
 	width: 25px;
 	height: 25px;
 	border-radius: 5px;
@@ -188,15 +186,15 @@ a:active {
 	width: 80%;
 }
 #upload input {
-	font-size: 14px;
 	width: 70%;
+	font-size: 14px;
 	font-family: 'Patrick Hand', cursive;
 }
 #upload button {
 	position: absolute;
+	bottom: 5px;
 	right: 5px;
 	top: 5px;
-	bottom: 5px;
 }
 #upload > input::-webkit-file-upload-button {
 	display: none;
