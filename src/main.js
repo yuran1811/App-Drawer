@@ -121,13 +121,9 @@ const removeAllEvent = () => {
 	canvas.removeEventListener('click', lineClick);
 };
 
-const eraseFunc = (e) => {
-	penMouseMove(e, sizeSelect.value * 2, '#ffffff');
-};
+const eraseFunc = (e) => penMouseMove(e, sizeSelect.value * 2, '#ffffff');
 
-const fileLocate = (e) => {
-	ctx.drawImage(e.target.imgData, e.offsetX, e.offsetY);
-};
+const fileLocate = (e) => ctx.drawImage(e.target.imgData, e.offsetX, e.offsetY);
 
 const drawUsePen = () => {
 	penPoint_status = true;
@@ -178,13 +174,9 @@ function Reset() {
 	canvas.width = $('#w-size').value;
 	canvas.height = $('#h-size').value;
 
-	const lastItemSelect = $('.btn--active');
-	if (lastItemSelect) {
-		lastItemSelect.className = lastItemSelect.className.replace(
-			'btn--active',
-			''
-		);
-	}
+	const lastActive = $('.btn--active');
+	if (lastActive)
+		lastActive.className = lastActive.className.replace('btn--active', '');
 
 	canvas.removeEventListener('mousedown', lineMouseDown);
 	canvas.removeEventListener('click', lineClick);
@@ -217,9 +209,7 @@ $('#resize').addEventListener('click', () => {
 	let dataURL = localStorage.getItem('img');
 	let img = new Image();
 	img.src = dataURL;
-	img.onload = function () {
-		ctx.drawImage(img, 0, 0);
-	};
+	img.onload = () => ctx.drawImage(img, 0, 0);
 });
 
 // Get Img from file
@@ -228,7 +218,7 @@ $('#file-upload').addEventListener('change', (e) => {
 	const files = e.target.files;
 	let img = new Image();
 	img.src = URL.createObjectURL(files[0]);
-	img.onload = function () {
+	img.onload = () => {
 		$('#upload button').addEventListener('click', () => {
 			removeAllEvent();
 			canvas.imgData = img;
@@ -240,13 +230,12 @@ $('#file-upload').addEventListener('change', (e) => {
 // Button When Click
 $$('.btn--change').forEach((item) => {
 	item.addEventListener('click', (e) => {
-		const lastItemSelect = $('.btn--active');
-		if (lastItemSelect) {
-			lastItemSelect.className = lastItemSelect.className.replace(
+		const lastActive = $('.btn--active');
+		if (lastActive)
+			lastActive.className = lastActive.className.replace(
 				'btn--active',
 				''
 			);
-		}
 		e.target.className += ' btn--active';
 	});
 });
