@@ -8,9 +8,10 @@
 }
 
 * {
+	-webkit-tap-highlight-color: transparent;
 	font-family: 'Patrick Hand', cursive;
 	box-sizing: border-box;
-	-webkit-tap-highlight-color: transparent;
+	user-select: none;
 }
 
 body {
@@ -39,6 +40,12 @@ body::-webkit-scrollbar-thumb {
 	background-color: darkgrey;
 	outline: 0.1px solid slategrey;
 	border-radius: 20px;
+}
+
+a:link,
+a:visited,
+a:active {
+	color: var(--color);
 }
 
 /*Header*/
@@ -71,28 +78,15 @@ h1:hover::after {
 	width: 100%;
 }
 
-a:link,
-a:visited,
-a:active {
-	color: black;
-}
-
-.ghub {
-	background-color: white;
-	border-radius: 50%;
-	position: absolute;
-	left: 5px;
-}
-
 /*Main*/
 #draw {
 	border: 1px solid rgb(143, 143, 143);
 	background-color: var(--canvas-color);
-	cursor: pointer;
 	position: absolute;
 	right: 0;
 	left: 0;
 	margin: auto;
+	cursor: pointer;
 }
 
 .main {
@@ -101,13 +95,13 @@ a:active {
 
 /* Menu */
 .menu-ico {
+	cursor: pointer;
 	position: fixed;
 	right: 25px;
-	cursor: pointer;
-	transition: all 0.5s ease;
 	z-index: 100;
-	background-color: var(--background);
 	border-radius: 50%;
+	transition: all 0.5s ease;
+	background-color: var(--background);
 }
 .menu-ico.active {
 	transform: rotateZ(-135deg);

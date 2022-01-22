@@ -135,8 +135,8 @@ const drawUsePen = () => {
 	canvas.removeEventListener('click', fileLocate);
 
 	canvas.addEventListener('mousedown', penMouseDown);
-	document.addEventListener('mouseup', penMouseUp);
 	canvas.addEventListener('mousemove', penMouseMove);
+	document.addEventListener('mouseup', penMouseUp);
 };
 
 const drawUseLine = () => {
