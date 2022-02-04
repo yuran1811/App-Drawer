@@ -15,23 +15,22 @@ let lineStack = [];
 let linePopIndex = -1;
 let lineStackIndex = -1;
 
-let penPoint_status = false;
-let penLine_status = false;
 let isDown = false;
 let prevX, prevY;
 
 // Draw Functions
-const drawHeadLine = (x, y, size, color) => {
-	const circle = new Path2D();
-	circle.arc(x, y, size, 0, 2 * Math.PI);
+const drawPoint = (
+	x,
+	y,
+	size = sizeSelect.value,
+	color = colorSelect.value
+) => {
+	ctx.beginPath();
+	ctx.arc(x, y, size, 0, 2 * Math.PI);
 	ctx.fillStyle = color;
-	ctx.fill(circle);
+	ctx.fill();
+	ctx.closePath();
 };
-
-function drawPoint(x, y, size, color) {
-	if (!penPoint_status) return;
-	drawHeadLine(x, y, size, color);
-}
 
 function drawLine(x1, y1, x2, y2, size, color) {
 	ctx.beginPath();
@@ -40,20 +39,20 @@ function drawLine(x1, y1, x2, y2, size, color) {
 	ctx.moveTo(x1, y1);
 	ctx.lineTo(x2, y2);
 	ctx.stroke();
+	ctx.closePath();
 }
 
 // Pen Function
 function penMouseDown(e) {
-	penPoint_status = isDown = 1;
+	isDown = 1;
 	prevX = e.offsetX;
 	prevY = e.offsetY;
 	drawPoint(prevX, prevY);
 }
 
 function penMouseUp() {
-	penPoint_status = isDown = 0;
-	prevX = undefined;
-	prevY = undefined;
+	prevX = prevY = undefined;
+	isDown = 0;
 }
 
 function penMouseMove(e, size = sizeSelect.value, color = colorSelect.value) {
@@ -71,49 +70,39 @@ function penMouseMove(e, size = sizeSelect.value, color = colorSelect.value) {
 
 // Line Function
 function lineMouseDown(e) {
-	const { clientX, clientY } = e;
-	prevX = clientX;
-	prevY = clientY;
+	prevX = e.clientX;
+	prevY = e.clientY;
 }
 
 function lineClick(e) {
-	if (!penLine_status) return;
-	const react = canvas.getBoundingClientRect();
-	const { clientX, clientY } = e;
+	const { top, left } = canvas.getBoundingClientRect();
+
+	const x = prevX - left;
+	const y = prevY - top;
+	const toX = e.clientX - left;
+	const toY = e.clientY - top;
+	const size = sizeSelect.value;
+	const color = colorSelect.value;
+
 	ctx.beginPath();
-	ctx.lineWidth = sizeSelect.value * 2;
-	ctx.strokeStyle = colorSelect.value;
-	ctx.moveTo(prevX - react.left, prevY - react.top);
-	ctx.lineTo(clientX - react.left, clientY - react.top);
+	ctx.strokeStyle = color;
+	ctx.lineWidth = size * 2;
+	ctx.moveTo(x, y);
+	ctx.lineTo(toX, toY);
 	ctx.stroke();
+	ctx.closePath();
 
-	drawHeadLine(
-		prevX - react.left,
-		prevY - react.top,
-		sizeSelect.value,
-		colorSelect.value
-	);
-	drawHeadLine(
-		clientX - react.left,
-		clientY - react.top,
-		sizeSelect.value,
-		colorSelect.value
-	);
+	drawPoint(x, y, size, color);
+	drawPoint(toX, toY, size, color);
 
-	lineStack.push([
-		ctx.lineWidth,
-		prevX - react.left,
-		prevY - react.top,
-		clientX - react.left,
-		clientY - react.top,
-		ctx.strokeStyle,
-	]);
+	lineStack.push([ctx.lineWidth, x, y, toX, toY, ctx.strokeStyle]);
 	lineStackIndex++;
 }
 
 // Draw Usage
 const removeAllEvent = () => {
 	document.removeEventListener('mouseup', penMouseUp);
+
 	canvas.removeEventListener('mousedown', penMouseDown);
 	canvas.removeEventListener('mousemove', penMouseMove);
 	canvas.removeEventListener('mousemove', eraseFunc);
@@ -126,9 +115,6 @@ const eraseFunc = (e) => penMouseMove(e, sizeSelect.value * 2, '#ffffff');
 const fileLocate = (e) => ctx.drawImage(e.target.imgData, e.offsetX, e.offsetY);
 
 const drawUsePen = () => {
-	penPoint_status = true;
-	penLine_status = false;
-
 	canvas.removeEventListener('mousedown', lineMouseDown);
 	canvas.removeEventListener('click', lineClick);
 	canvas.removeEventListener('mousemove', eraseFunc);
@@ -140,9 +126,6 @@ const drawUsePen = () => {
 };
 
 const drawUseLine = () => {
-	penLine_status = true;
-	penPoint_status = false;
-
 	canvas.removeEventListener('mousedown', penMouseDown);
 	document.removeEventListener('mouseup', penMouseUp);
 	canvas.removeEventListener('mousemove', penMouseMove);
@@ -157,10 +140,7 @@ $('#pen').addEventListener('click', drawUsePen);
 $('#line').addEventListener('click', drawUseLine);
 
 // Clear & Resize & Eraser
-$('#eraser').addEventListener('click', () => {
-	penPoint_status = true;
-	penLine_status = false;
-
+$('#eraser').onclick = () => {
 	canvas.removeEventListener('mousedown', lineMouseDown);
 	canvas.removeEventListener('click', lineClick);
 	canvas.removeEventListener('mousemove', penMouseMove);
@@ -168,7 +148,7 @@ $('#eraser').addEventListener('click', () => {
 	canvas.addEventListener('mousedown', penMouseDown);
 	document.addEventListener('mouseup', penMouseUp);
 	canvas.addEventListener('mousemove', eraseFunc);
-});
+};
 
 function Reset() {
 	canvas.width = $('#w-size').value;
@@ -178,15 +158,14 @@ function Reset() {
 	if (lastActive)
 		lastActive.className = lastActive.className.replace('btn--active', '');
 
-	canvas.removeEventListener('mousedown', lineMouseDown);
+	document.removeEventListener('mouseup', penMouseUp);
 	canvas.removeEventListener('click', lineClick);
 	canvas.removeEventListener('mousedown', penMouseDown);
-	document.removeEventListener('mouseup', penMouseUp);
+	canvas.removeEventListener('mousedown', lineMouseDown);
 	canvas.removeEventListener('mousemove', penMouseMove);
 }
 
-$('#reset').addEventListener('click', () => {
-	penPoint_status = penLine_status = 0;
+$('#reset').onclick = () => {
 	Reset();
 
 	linePopIndex = lineStackIndex = -1;
@@ -201,16 +180,15 @@ $('#reset').addEventListener('click', () => {
 	canvas.width = 900;
 	canvas.height = 500;
 	ctx.fillStyle = 'black';
-});
-
-$('#resize').addEventListener('click', () => {
+};
+$('#resize').onclick = () => {
 	localStorage.setItem('img', canvas.toDataURL());
 	Reset();
 	let dataURL = localStorage.getItem('img');
 	let img = new Image();
 	img.src = dataURL;
 	img.onload = () => ctx.drawImage(img, 0, 0);
-});
+};
 
 // Get Img from file
 const reader = new FileReader();
@@ -259,7 +237,6 @@ $('.menu-ico').addEventListener('click', (e) => {
 	e.target.classList.toggle('active');
 	$('.all-tool').classList.toggle('active');
 });
-
 $('.tool-container').addEventListener('dblclick', () => {
 	$('.all-tool').classList.remove('active');
 	$('.menu-ico').classList.remove('active');
@@ -267,7 +244,7 @@ $('.tool-container').addEventListener('dblclick', () => {
 
 // Undo
 window.addEventListener('keydown', (e) => {
-	if (e.keyCode == 90) {
+	if (e.key == 'z') {
 		if (lineStackIndex < 0) return;
 		const lineItem = lineStack[lineStackIndex--];
 		lineStack.pop();
@@ -276,20 +253,21 @@ window.addEventListener('keydown', (e) => {
 		linePopIndex++;
 
 		ctx.beginPath();
-		ctx.lineWidth = lineItem[0] + 2;
 		ctx.strokeStyle = '#ffffff';
+		ctx.lineWidth = lineItem[0] + 2;
 		ctx.moveTo(lineItem[1], lineItem[2]);
 		ctx.lineTo(lineItem[3], lineItem[4]);
 		ctx.stroke();
+		ctx.closePath();
 
-		drawHeadLine(lineItem[1], lineItem[2], lineItem[0] / 2 + 1, '#ffffff');
-		drawHeadLine(lineItem[3], lineItem[4], lineItem[0] / 2 + 1, '#ffffff');
+		drawPoint(lineItem[1], lineItem[2], lineItem[0] / 2 + 1, '#ffffff');
+		drawPoint(lineItem[3], lineItem[4], lineItem[0] / 2 + 1, '#ffffff');
 
 		ctx.lineWidth = sizeSelect.value * 2;
 		ctx.strokeStyle = colorSelect.value;
 	}
 
-	if (e.keyCode == 89) {
+	if (e.key == 'y') {
 		if (linePopIndex < 0) return;
 		const lineItem = linePop[linePopIndex--];
 		linePop.pop();
@@ -303,9 +281,10 @@ window.addEventListener('keydown', (e) => {
 		ctx.moveTo(lineItem[1], lineItem[2]);
 		ctx.lineTo(lineItem[3], lineItem[4]);
 		ctx.stroke();
+		ctx.closePath();
 
-		drawHeadLine(lineItem[1], lineItem[2], lineItem[0] / 2, lineItem[5]);
-		drawHeadLine(lineItem[3], lineItem[4], lineItem[0] / 2, lineItem[5]);
+		drawPoint(lineItem[1], lineItem[2], lineItem[0] / 2, lineItem[5]);
+		drawPoint(lineItem[3], lineItem[4], lineItem[0] / 2, lineItem[5]);
 
 		ctx.lineWidth = sizeSelect.value * 2;
 		ctx.strokeStyle = colorSelect.value;
