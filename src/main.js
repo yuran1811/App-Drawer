@@ -3,35 +3,37 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const sizeSelect = $('#size');
+const colorSelect = $('#color');
 const canvas = $('#draw');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'black';
 
-const sizeSelect = $('#size');
-const colorSelect = $('#color');
+const mouse = {
+	x: undefined,
+	y: undefined,
+};
+const coor = {
+	x: 0,
+	y: 0,
+};
 
 let linePop = [];
 let lineStack = [];
 let linePopIndex = -1;
 let lineStackIndex = -1;
-
 let isDown = false;
 let prevX, prevY;
 
 // Draw Functions
-const drawPoint = (
-	x,
-	y,
-	size = sizeSelect.value,
-	color = colorSelect.value
-) => {
+function drawPoint(x, y, size = sizeSelect.value, color = colorSelect.value) {
 	ctx.beginPath();
-	ctx.arc(x, y, size, 0, 2 * Math.PI);
+	ctx.arc(x, y, size, 0, 2 * Math.PI, false);
 	ctx.fillStyle = color;
 	ctx.fill();
 	ctx.closePath();
-};
-
+	ctx.save();
+}
 function drawLine(x1, y1, x2, y2, size, color) {
 	ctx.beginPath();
 	ctx.lineWidth = size * 2;
@@ -40,6 +42,7 @@ function drawLine(x1, y1, x2, y2, size, color) {
 	ctx.lineTo(x2, y2);
 	ctx.stroke();
 	ctx.closePath();
+	ctx.save();
 }
 
 // Pen Function
@@ -49,12 +52,10 @@ function penMouseDown(e) {
 	prevY = e.offsetY;
 	drawPoint(prevX, prevY);
 }
-
 function penMouseUp() {
 	prevX = prevY = undefined;
 	isDown = 0;
 }
-
 function penMouseMove(e, size = sizeSelect.value, color = colorSelect.value) {
 	const x2 = e.offsetX;
 	const y2 = e.offsetY;
@@ -73,7 +74,6 @@ function lineMouseDown(e) {
 	prevX = e.clientX;
 	prevY = e.clientY;
 }
-
 function lineClick(e) {
 	const { top, left } = canvas.getBoundingClientRect();
 
@@ -111,7 +111,6 @@ const removeAllEvent = () => {
 };
 
 const eraseFunc = (e) => penMouseMove(e, sizeSelect.value * 2, '#ffffff');
-
 const fileLocate = (e) => ctx.drawImage(e.target.imgData, e.offsetX, e.offsetY);
 
 const drawUsePen = () => {
@@ -124,7 +123,6 @@ const drawUsePen = () => {
 	canvas.addEventListener('mousemove', penMouseMove);
 	document.addEventListener('mouseup', penMouseUp);
 };
-
 const drawUseLine = () => {
 	canvas.removeEventListener('mousedown', penMouseDown);
 	document.removeEventListener('mouseup', penMouseUp);
@@ -153,6 +151,7 @@ $('#eraser').onclick = () => {
 function Reset() {
 	canvas.width = $('#w-size').value;
 	canvas.height = $('#h-size').value;
+	ctx.restore();
 
 	const lastActive = $('.btn--active');
 	if (lastActive)

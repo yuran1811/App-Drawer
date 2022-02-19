@@ -161,10 +161,10 @@ h1:hover::after {
 	border-radius: 5px;
 }
 
-.resize-container {
+#resize-container {
 	border-radius: 0;
 }
-.resize-container:hover {
+#resize-container:hover {
 	background-color: var(--background);
 }
 
