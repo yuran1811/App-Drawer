@@ -3,8 +3,8 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
-const sizeSelect = $('#size');
-const colorSelect = $('#color');
+const sizeEle = $('#size');
+const colorEle = $('#color');
 const canvas = $('#draw');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'black';
@@ -26,23 +26,28 @@ let isDown = false;
 let prevX, prevY;
 
 // Draw Functions
-function drawPoint(x, y, size = sizeSelect.value, color = colorSelect.value) {
+function drawPoint(x, y, size = sizeEle.value, color = colorEle.value) {
 	ctx.beginPath();
 	ctx.arc(x, y, size, 0, 2 * Math.PI, false);
 	ctx.fillStyle = color;
 	ctx.fill();
 	ctx.closePath();
-	ctx.save();
 }
-function drawLine(x1, y1, x2, y2, size, color) {
+function drawLine(
+	x1,
+	y1,
+	x2,
+	y2,
+	size = sizeEle.value,
+	color = colorEle.value
+) {
 	ctx.beginPath();
-	ctx.lineWidth = size * 2;
-	ctx.strokeStyle = color;
 	ctx.moveTo(x1, y1);
 	ctx.lineTo(x2, y2);
+	ctx.lineWidth = size * 2;
+	ctx.strokeStyle = color;
 	ctx.stroke();
 	ctx.closePath();
-	ctx.save();
 }
 
 // Pen Function
@@ -56,7 +61,7 @@ function penMouseUp() {
 	prevX = prevY = undefined;
 	isDown = 0;
 }
-function penMouseMove(e, size = sizeSelect.value, color = colorSelect.value) {
+function penMouseMove(e, size = sizeEle.value, color = colorEle.value) {
 	const x2 = e.offsetX;
 	const y2 = e.offsetY;
 
@@ -81,8 +86,8 @@ function lineClick(e) {
 	const y = prevY - top;
 	const toX = e.clientX - left;
 	const toY = e.clientY - top;
-	const size = sizeSelect.value;
-	const color = colorSelect.value;
+	const size = sizeEle.value;
+	const color = colorEle.value;
 
 	ctx.beginPath();
 	ctx.strokeStyle = color;
@@ -92,8 +97,8 @@ function lineClick(e) {
 	ctx.stroke();
 	ctx.closePath();
 
-	drawPoint(x, y, size, color);
-	drawPoint(toX, toY, size, color);
+	drawPoint(x, y);
+	drawPoint(toX, toY);
 
 	lineStack.push([ctx.lineWidth, x, y, toX, toY, ctx.strokeStyle]);
 	lineStackIndex++;
@@ -102,34 +107,33 @@ function lineClick(e) {
 // Draw Usage
 const removeAllEvent = () => {
 	document.removeEventListener('mouseup', penMouseUp);
-
+	canvas.removeEventListener('mousedown', eraseMouseDown);
+	canvas.removeEventListener('mousedown', lineMouseDown);
 	canvas.removeEventListener('mousedown', penMouseDown);
 	canvas.removeEventListener('mousemove', penMouseMove);
 	canvas.removeEventListener('mousemove', eraseFunc);
-	canvas.removeEventListener('mousedown', lineMouseDown);
+	canvas.removeEventListener('click', fileLocate);
 	canvas.removeEventListener('click', lineClick);
 };
 
-const eraseFunc = (e) => penMouseMove(e, sizeSelect.value * 2, '#ffffff');
+const eraseFunc = (e) => penMouseMove(e, sizeEle.value * 2, '#ffffff');
+const eraseMouseDown = (e) => {
+	isDown = 1;
+	prevX = e.offsetX;
+	prevY = e.offsetY;
+	drawPoint(prevX, prevY, sizeEle.value * 2, '#ffffff');
+};
+
 const fileLocate = (e) => ctx.drawImage(e.target.imgData, e.offsetX, e.offsetY);
 
 const drawUsePen = () => {
-	canvas.removeEventListener('mousedown', lineMouseDown);
-	canvas.removeEventListener('click', lineClick);
-	canvas.removeEventListener('mousemove', eraseFunc);
-	canvas.removeEventListener('click', fileLocate);
-
+	removeAllEvent();
 	canvas.addEventListener('mousedown', penMouseDown);
 	canvas.addEventListener('mousemove', penMouseMove);
 	document.addEventListener('mouseup', penMouseUp);
 };
 const drawUseLine = () => {
-	canvas.removeEventListener('mousedown', penMouseDown);
-	document.removeEventListener('mouseup', penMouseUp);
-	canvas.removeEventListener('mousemove', penMouseMove);
-	canvas.removeEventListener('mousemove', eraseFunc);
-	canvas.removeEventListener('click', fileLocate);
-
+	removeAllEvent();
 	canvas.addEventListener('mousedown', lineMouseDown);
 	canvas.addEventListener('click', lineClick);
 };
@@ -139,16 +143,14 @@ $('#line').addEventListener('click', drawUseLine);
 
 // Clear & Resize & Eraser
 $('#eraser').onclick = () => {
-	canvas.removeEventListener('mousedown', lineMouseDown);
-	canvas.removeEventListener('click', lineClick);
-	canvas.removeEventListener('mousemove', penMouseMove);
-
-	canvas.addEventListener('mousedown', penMouseDown);
-	document.addEventListener('mouseup', penMouseUp);
+	removeAllEvent();
 	canvas.addEventListener('mousemove', eraseFunc);
+	canvas.addEventListener('mousedown', eraseMouseDown);
+	document.addEventListener('mouseup', penMouseUp);
 };
 
 function Reset() {
+	ctx.save();
 	canvas.width = $('#w-size').value;
 	canvas.height = $('#h-size').value;
 	ctx.restore();
@@ -171,10 +173,10 @@ $('#reset').onclick = () => {
 	linePop = [];
 	lineStack = [];
 
-	sizeSelect.value = 5;
+	sizeEle.value = 5;
 	$('#w-size').value = 900;
 	$('#h-size').value = 500;
-	colorSelect.value = '#000000';
+	colorEle.value = '#000000';
 
 	canvas.width = 900;
 	canvas.height = 500;
@@ -262,8 +264,8 @@ window.addEventListener('keydown', (e) => {
 		drawPoint(lineItem[1], lineItem[2], lineItem[0] / 2 + 1, '#ffffff');
 		drawPoint(lineItem[3], lineItem[4], lineItem[0] / 2 + 1, '#ffffff');
 
-		ctx.lineWidth = sizeSelect.value * 2;
-		ctx.strokeStyle = colorSelect.value;
+		ctx.lineWidth = sizeEle.value * 2;
+		ctx.strokeStyle = colorEle.value;
 	}
 
 	if (e.key == 'y') {
@@ -285,7 +287,7 @@ window.addEventListener('keydown', (e) => {
 		drawPoint(lineItem[1], lineItem[2], lineItem[0] / 2, lineItem[5]);
 		drawPoint(lineItem[3], lineItem[4], lineItem[0] / 2, lineItem[5]);
 
-		ctx.lineWidth = sizeSelect.value * 2;
-		ctx.strokeStyle = colorSelect.value;
+		ctx.lineWidth = sizeEle.value * 2;
+		ctx.strokeStyle = colorEle.value;
 	}
 });
