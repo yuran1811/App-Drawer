@@ -156,7 +156,7 @@ function Reset() {
 	ctx.restore();
 
 	const last = $('.btn--active');
-	if (last) last.className = last.className.replace('btn--active', '');
+	if (last) last.classList.remove('btn--active');
 
 	document.removeEventListener('mouseup', penMouseUp);
 	canvas.removeEventListener('click', lineClick);
@@ -207,14 +207,10 @@ $('#file-upload').addEventListener('change', (e) => {
 
 // Button When Click
 $$('.btn--change').forEach((item) => {
-	item.addEventListener('click', (e) => {
-		const lastActive = $('.btn--active');
-		if (lastActive)
-			lastActive.className = lastActive.className.replace(
-				'btn--active',
-				''
-			);
-		e.target.className += ' btn--active';
+	item.addEventListener('click', () => {
+		const last = $('.btn--active');
+		if (last) last.className = last.className.replace(' btn--active', '');
+		item.classList.toggle('btn--active');
 	});
 });
 

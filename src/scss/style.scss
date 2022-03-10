@@ -1,4 +1,6 @@
 :root {
+	--border-size: 1.2px;
+
 	--border-color: #000000;
 	--canvas-color: #ffffff;
 	--background: white;
@@ -45,6 +47,10 @@ a {
 		color: var(--color);
 	}
 }
+input {
+	padding: 2px 5px;
+	border-radius: 5px;
+}
 
 .header {
 	position: relative;
@@ -77,7 +83,7 @@ a {
 	display: flex;
 
 	#draw {
-		border: 1px solid rgb(143, 143, 143);
+		border: var(--border-size) solid rgb(143, 143, 143);
 		background-color: var(--canvas-color);
 		position: absolute;
 		right: 0;
@@ -117,15 +123,19 @@ a {
 				background-color: var(--all-tool-background);
 				border-radius: 10px;
 				.tool-btn {
-					border: 1px solid var(--border-color);
+					border: var(--border-size) solid var(--border-color);
 					margin: 7px;
-					padding: 5px;
+					padding: 3px 5px;
+					border-radius: 5px;
 					cursor: pointer;
 					position: relative;
+					display: flex;
+					align-items: center;
+					justify-content: space-around;
 					&::before {
 						content: '';
 						position: absolute;
-						left: -30px;
+						left: -40px;
 						width: 25px;
 						height: 25px;
 						border-radius: 5px;
@@ -137,9 +147,15 @@ a {
 						margin: 0 0 0 5px;
 						cursor: pointer;
 						width: 50px;
+						&[type='number'] {
+							cursor: text;
+						}
 					}
-					& > input[type='number'] {
-						cursor: text;
+
+					.tool-label {
+						padding: 2px 4px;
+						margin: 2px;
+						line-height: 1;
 					}
 				}
 				.tool-btn:hover,
@@ -148,15 +164,19 @@ a {
 				}
 
 				#resize-container {
-					border-radius: 0;
+					position: relative;
 					&:hover {
-						background-color: var(--background);
+						background-color: transparent;
 					}
 					#resize {
+						border-radius: inherit;
 						width: 100%;
-						border: none;
+						padding: 5px;
+						margin: 4px;
+						border: var(--border-size) solid var(--color);
+						position: relative;
 						&:hover {
-							padding: 0 5px;
+							background-color: var(--tool-btn-hover);
 						}
 					}
 				}
@@ -166,15 +186,19 @@ a {
 						width: 70%;
 						font-size: 14px;
 						font-family: 'Patrick Hand', cursive;
+						&::-webkit-file-upload-button {
+							display: none;
+						}
 					}
 					button {
 						position: absolute;
-						bottom: 5px;
+						top: 0;
+						bottom: 0;
 						right: 5px;
-						top: 5px;
-					}
-					& > input::-webkit-file-upload-button {
-						display: none;
+						font-size: 14px;
+						text-align: center;
+						border: none;
+						background-color: transparent;
 					}
 				}
 
@@ -195,10 +219,12 @@ a {
 				#line,
 				#upload {
 					&:hover::before {
-						background-size: cover;
+						background-size: 27px;
 					}
 					&::before {
+						padding: 3px;
 						background-size: 20px;
+						background-color: white;
 						background-position: center;
 						background-repeat: no-repeat;
 					}

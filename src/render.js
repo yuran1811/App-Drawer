@@ -56,15 +56,16 @@ const TOOL = [
 		id: 'resize-container',
 		label: '',
 		change: false,
-		content: `Width:
+		content: `
+				<span class="tool-label"> Width: </span>
 				<input
 					id="w-size" type="number"
 					value="900" min="50" max="1200"
 					placeholder="width"
 				/>
-				Height:
+				<span class="tool-label"> Height: </span>
 				<input id="h-size" type="number" value="500" min="50" max="700" placeholder="height"/>
-				<span class="tool-btn" id="resize">Resize</span>`,
+				<div id="resize">Resize</div>`,
 	},
 ];
 
@@ -74,7 +75,7 @@ const toolContainerHTML = TOOL.map(
 			class="tool-btn ${item.change ? 'btn--change' : ''}"
 			${item.id ? `id="${item.id}"` : ''}
 		>
-		${item.label ? `${item.label}` : ''}
+		${item.label ? `<span class="tool-label"> ${item.label} </span>` : ''}
 		${item.content ? `${item.content}` : ''}
 		</div>`
 ).join('');
