@@ -194,10 +194,10 @@ $('#resize').onclick = () => {
 const reader = new FileReader();
 $('#file-upload').addEventListener('change', (e) => {
 	const files = e.target.files;
-	let img = new Image();
+	const img = new Image();
 	img.src = URL.createObjectURL(files[0]);
 	img.onload = () => {
-		$('#upload button').addEventListener('click', () => {
+		$('.add-img').addEventListener('click', () => {
 			removeAllEvent();
 			canvas.imgData = img;
 			canvas.addEventListener('click', fileLocate);

@@ -194,11 +194,14 @@ input {
 						position: absolute;
 						top: 0;
 						bottom: 0;
+						margin: 4px;
 						right: 5px;
+						border-radius: inherit;
 						font-size: 14px;
-						text-align: center;
+						color: var(--color);
 						border: none;
-						background-color: transparent;
+						text-align: center;
+						background-color: var(--background);
 					}
 				}
 
