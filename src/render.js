@@ -85,12 +85,11 @@ const mainHTML = `
 	</div>
 	<div class="menu">
 		<i class="fa-3x fas fa-plus-circle menu-ico"></i>
-		<div class="all-tool">
+		<div class="menu-tool">
 			<div class="tool-container">
 				${toolContainerHTML}
 			</div>
 		</div>
 	</div>`;
 
-const main = document.querySelector('.main');
-main.innerHTML = mainHTML;
+document.querySelector('.main').innerHTML = mainHTML;

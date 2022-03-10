@@ -1,9 +1,5 @@
 # About "App Drawer"
 
-## This is the official site of [**App Drawer**](https://github.com/yuran1811/Yuran-Web-Projects/tree/main/AppDrawer) Project
-
-## All updates are available here
-
 ## These are the features of this app:
 
 -   [x] Draw Lines

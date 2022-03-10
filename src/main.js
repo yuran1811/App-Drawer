@@ -138,8 +138,8 @@ const drawUseLine = () => {
 	canvas.addEventListener('click', lineClick);
 };
 
-$('#pen').addEventListener('click', drawUsePen);
-$('#line').addEventListener('click', drawUseLine);
+$('#pen').onclick = drawUsePen;
+$('#line').onclick = drawUseLine;
 
 // Clear & Resize & Eraser
 $('#eraser').onclick = () => {
@@ -155,9 +155,8 @@ function Reset() {
 	canvas.height = $('#h-size').value;
 	ctx.restore();
 
-	const lastActive = $('.btn--active');
-	if (lastActive)
-		lastActive.className = lastActive.className.replace('btn--active', '');
+	const last = $('.btn--active');
+	if (last) last.className = last.className.replace('btn--active', '');
 
 	document.removeEventListener('mouseup', penMouseUp);
 	canvas.removeEventListener('click', lineClick);
@@ -222,7 +221,7 @@ $$('.btn--change').forEach((item) => {
 // Theme Toggle
 let isDark = 0;
 const Mode = $('#switch-mode');
-Mode.addEventListener('click', () => {
+Mode.onclick = () => {
 	document.body.classList.toggle('dark');
 	if (isDark) {
 		Mode.innerHTML = 'Dark';
@@ -231,20 +230,20 @@ Mode.addEventListener('click', () => {
 		Mode.innerHTML = 'Light';
 		isDark = 1;
 	}
-});
+};
 
 // Menu
-$('.menu-ico').addEventListener('click', (e) => {
+$('.menu-ico').onclick = (e) => {
 	e.target.classList.toggle('active');
-	$('.all-tool').classList.toggle('active');
-});
-$('.tool-container').addEventListener('dblclick', () => {
-	$('.all-tool').classList.remove('active');
+	$('.menu-tool').classList.toggle('active');
+};
+$('.tool-container').ondblclick = () => {
+	$('.menu-tool').classList.remove('active');
 	$('.menu-ico').classList.remove('active');
-});
+};
 
 // Undo
-window.addEventListener('keydown', (e) => {
+onkeydown = (e) => {
 	if (e.key == 'z') {
 		if (lineStackIndex < 0) return;
 		const lineItem = lineStack[lineStackIndex--];
@@ -290,4 +289,4 @@ window.addEventListener('keydown', (e) => {
 		ctx.lineWidth = sizeEle.value * 2;
 		ctx.strokeStyle = colorEle.value;
 	}
-});
+};
