@@ -3,11 +3,12 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
-const sizeEle = $('#size');
-const colorEle = $('#color');
 const canvas = $('#draw');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'black';
+
+const sizeEle = $('#size');
+const colorEle = $('#color');
 
 const mouse = {
 	x: undefined,

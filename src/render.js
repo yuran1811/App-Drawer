@@ -19,7 +19,7 @@ const TOOL = [
 	},
 	{
 		id: 'pen',
-		label: 'Pen',
+		label: 'Brush',
 		change: true,
 		content: ``,
 	},
@@ -39,33 +39,35 @@ const TOOL = [
 		id: '',
 		label: 'Size',
 		change: false,
-		content: `<input
-					id="size" type="number"
-					value="5" min="1" max="400"
-					placeholder="Change the size"
-				/>`,
+		content: `
+		<input
+			id="size" type="number"
+			value="5" min="1" max="400"
+			placeholder="Change the size"
+		/>`,
 	},
 	{
 		id: 'upload',
 		label: 'Upload',
 		change: false,
-		content: `<input type="file" id="file-upload" name="filename" accept=".jpg, .png, .svg" multiple/>
-				<button class="add-img">Add</button>`,
+		content: `
+		<input type="file" id="file-upload" name="filename" accept=".jpg, .png, .svg" multiple/>
+		<button class="add-img">Add</button>`,
 	},
 	{
 		id: 'resize-container',
 		label: '',
 		change: false,
 		content: `
-				<span class="tool-label"> Width: </span>
-				<input
-					id="w-size" type="number"
-					value="900" min="50" max="1200"
-					placeholder="width"
-				/>
-				<span class="tool-label"> Height: </span>
-				<input id="h-size" type="number" value="500" min="50" max="700" placeholder="height"/>
-				<div id="resize">Resize</div>`,
+		<span class="tool-label"> Width: </span>
+		<input
+			id="w-size" type="number"
+			value="900" min="50" max="1200"
+			placeholder="width"
+		/>
+		<span class="tool-label"> Height: </span>
+		<input id="h-size" type="number" value="500" min="50" max="700" placeholder="height"/>
+		<div id="resize">Resize</div>`,
 	},
 ];
 
