@@ -7,6 +7,8 @@ const canvas = $('#draw');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'black';
 
+const canvasImage = [];
+
 const sizeEle = $('#size');
 const colorEle = $('#color');
 
@@ -25,6 +27,16 @@ let linePopIndex = -1;
 let lineStackIndex = -1;
 let isDown = false;
 let prevX, prevY;
+
+// Redo
+function undoDraw() {
+	if (canvasImage.length) {
+		canvas.width = $('#w-size').value;
+		canvas.height = $('#h-size').value;
+
+		ctx.drawImage(canvasImage.pop(), 0, 0);
+	}
+}
 
 // Draw Functions
 function drawPoint(x, y, size = sizeEle.value, color = colorEle.value) {
@@ -56,6 +68,11 @@ function penMouseDown(e) {
 	isDown = 1;
 	prevX = e.offsetX;
 	prevY = e.offsetY;
+
+	const img = new Image();
+	img.src = canvas.toDataURL('image/bmp', 1.0);
+	canvasImage.push(img);
+
 	drawPoint(prevX, prevY);
 }
 function penMouseUp() {
@@ -77,42 +94,76 @@ function penMouseMove(e, size = sizeEle.value, color = colorEle.value) {
 
 // Line Function
 function lineMouseDown(e) {
-	prevX = e.clientX;
-	prevY = e.clientY;
+	isDown = 1;
+	prevX = e.offsetX;
+	prevY = e.offsetY;
 }
 function lineClick(e) {
 	const { top, left } = canvas.getBoundingClientRect();
 
-	const x = prevX - left;
-	const y = prevY - top;
 	const toX = e.clientX - left;
 	const toY = e.clientY - top;
 	const size = sizeEle.value;
 	const color = colorEle.value;
 
+	undoDraw();
+
+	const img = new Image();
+	img.src = canvas.toDataURL('image/bmp', 1.0);
+	canvasImage.push(img);
+
 	ctx.beginPath();
 	ctx.strokeStyle = color;
 	ctx.lineWidth = size * 2;
-	ctx.moveTo(x, y);
+	ctx.moveTo(prevX, prevY);
 	ctx.lineTo(toX, toY);
 	ctx.stroke();
 	ctx.closePath();
 
-	drawPoint(x, y);
-	drawPoint(toX, toY);
+	if (isDown) {
+		drawPoint(prevX, prevY);
+		drawPoint(toX, toY);
+	}
+}
+function lineUp(e) {
+	const { top, left } = canvas.getBoundingClientRect();
 
-	lineStack.push([ctx.lineWidth, x, y, toX, toY, ctx.strokeStyle]);
-	lineStackIndex++;
+	const toX = e.clientX - left;
+	const toY = e.clientY - top;
+	const size = sizeEle.value;
+	const color = colorEle.value;
+
+	undoDraw();
+
+	ctx.beginPath();
+	ctx.strokeStyle = color;
+	ctx.lineWidth = size * 2;
+	ctx.moveTo(prevX, prevY);
+	ctx.lineTo(toX, toY);
+	ctx.stroke();
+	ctx.closePath();
+
+	if (isDown) {
+		drawPoint(prevX, prevY);
+		drawPoint(toX, toY);
+	}
+
+	prevX = prevY = undefined;
+	isDown = 0;
 }
 
 // Draw Usage
 const removeAllEvent = () => {
 	document.removeEventListener('mouseup', penMouseUp);
+
 	canvas.removeEventListener('mousedown', eraseMouseDown);
 	canvas.removeEventListener('mousedown', lineMouseDown);
 	canvas.removeEventListener('mousedown', penMouseDown);
+
 	canvas.removeEventListener('mousemove', penMouseMove);
 	canvas.removeEventListener('mousemove', eraseFunc);
+	canvas.removeEventListener('mousemove', lineClick);
+
 	canvas.removeEventListener('click', fileLocate);
 	canvas.removeEventListener('click', lineClick);
 };
@@ -135,8 +186,10 @@ const drawUsePen = () => {
 };
 const drawUseLine = () => {
 	removeAllEvent();
+
 	canvas.addEventListener('mousedown', lineMouseDown);
-	canvas.addEventListener('click', lineClick);
+	canvas.addEventListener('mousemove', lineClick);
+	document.addEventListener('mouseup', lineUp);
 };
 
 $('#pen').onclick = drawUsePen;
@@ -241,49 +294,5 @@ $('.tool-container').ondblclick = () => {
 
 // Undo
 onkeydown = (e) => {
-	if (e.key == 'z') {
-		if (lineStackIndex < 0) return;
-		const lineItem = lineStack[lineStackIndex--];
-		lineStack.pop();
-
-		linePop.push(lineItem);
-		linePopIndex++;
-
-		ctx.beginPath();
-		ctx.strokeStyle = '#ffffff';
-		ctx.lineWidth = lineItem[0] + 2;
-		ctx.moveTo(lineItem[1], lineItem[2]);
-		ctx.lineTo(lineItem[3], lineItem[4]);
-		ctx.stroke();
-		ctx.closePath();
-
-		drawPoint(lineItem[1], lineItem[2], lineItem[0] / 2 + 1, '#ffffff');
-		drawPoint(lineItem[3], lineItem[4], lineItem[0] / 2 + 1, '#ffffff');
-
-		ctx.lineWidth = sizeEle.value * 2;
-		ctx.strokeStyle = colorEle.value;
-	}
-
-	if (e.key == 'y') {
-		if (linePopIndex < 0) return;
-		const lineItem = linePop[linePopIndex--];
-		linePop.pop();
-
-		lineStack.push(lineItem);
-		lineStackIndex++;
-
-		ctx.beginPath();
-		ctx.lineWidth = lineItem[0];
-		ctx.strokeStyle = lineItem[5];
-		ctx.moveTo(lineItem[1], lineItem[2]);
-		ctx.lineTo(lineItem[3], lineItem[4]);
-		ctx.stroke();
-		ctx.closePath();
-
-		drawPoint(lineItem[1], lineItem[2], lineItem[0] / 2, lineItem[5]);
-		drawPoint(lineItem[3], lineItem[4], lineItem[0] / 2, lineItem[5]);
-
-		ctx.lineWidth = sizeEle.value * 2;
-		ctx.strokeStyle = colorEle.value;
-	}
+	if (e.key == 'z') undoDraw();
 };

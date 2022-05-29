@@ -1,6 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
 :root {
 	--border-size: 1.2px;
-
 	--border-color: #000000;
 	--canvas-color: #ffffff;
 	--background: white;
@@ -14,12 +15,18 @@
 	font-family: 'Patrick Hand', cursive;
 	box-sizing: border-box;
 	user-select: none;
+	margin: 0;
+	padding: 0;
 }
+
 body {
 	background-color: var(--background);
 	color: var(--color);
 	display: flex;
+	align-items: center;
+	justify-content: start;
 	flex-direction: column;
+
 	&.dark {
 		--border-color: white;
 		--background: #222;
@@ -27,9 +34,11 @@ body {
 		--tool-btn-hover: #af4343;
 		--all-tool-background: rgba(78, 78, 78, 0.8);
 	}
+
 	&::-webkit-scrollbar {
-		width: 10px;
-		height: 10px;
+		width: 0;
+		height: 0;
+
 		&-track {
 			background-color: rgb(206, 206, 206);
 		}
@@ -40,6 +49,7 @@ body {
 		}
 	}
 }
+
 a {
 	&:link,
 	&:visited,
@@ -47,6 +57,7 @@ a {
 		color: var(--color);
 	}
 }
+
 input {
 	padding: 2px 5px;
 	border-radius: 5px;
@@ -55,17 +66,18 @@ input {
 .header {
 	position: relative;
 	height: 60px;
+	width: 100%;
 	right: 0;
 	left: 0;
+	padding: 5px 10px;
+	border-bottom: 2px solid var(--color);
+
 	h1 {
 		position: absolute;
-		padding: 5px 10px;
 		margin: auto;
 		left: 50%;
 		transform: translateX(-50%);
-		&:hover::after {
-			width: 100%;
-		}
+
 		&::after {
 			content: ' ';
 			position: absolute;
@@ -77,43 +89,52 @@ input {
 			background-color: var(--color);
 			transition: all 0.5s ease;
 		}
+		&:hover::after {
+			width: 100%;
+		}
 	}
 }
+
 .main {
 	display: flex;
 
 	#draw {
-		border: var(--border-size) solid rgb(143, 143, 143);
-		background-color: var(--canvas-color);
+		cursor: pointer;
+		border: none;
 		position: absolute;
 		right: 0;
 		left: 0;
-		margin: auto;
-		cursor: pointer;
+		background-color: var(--canvas-color);
 	}
+
 	.menu {
 		&-ico {
 			cursor: pointer;
 			position: fixed;
-			right: 25px;
-			z-index: 100;
+			top: 4px;
+			right: 15px;
+			z-index: 1;
+			width: 50px;
+			height: 50px;
 			border-radius: 50%;
 			transition: all 0.5s ease;
-			background-color: var(--background);
+			background-color: var(--color);
+
 			&.active {
-				transform: rotateZ(-135deg);
+				background-color: #ffc2c2;
+
+				& + .menu-tool {
+					transform: translateX(0);
+				}
 			}
 		}
+
 		&-tool {
 			position: fixed;
 			right: 0;
-			margin: 65px 25px 0 0;
+			margin: 5px 15px 0 0;
 			transform: translateX(200%);
 			transition: all 0.5s ease;
-			width: auto;
-			&.active {
-				transform: translateX(0);
-			}
 
 			.tool-container {
 				display: flex;
@@ -122,6 +143,7 @@ input {
 				justify-content: flex-end;
 				background-color: var(--all-tool-background);
 				border-radius: 10px;
+
 				.tool-btn {
 					border: var(--border-size) solid var(--border-color);
 					margin: 7px;
@@ -132,6 +154,7 @@ input {
 					display: flex;
 					align-items: center;
 					justify-content: space-around;
+
 					&::before {
 						content: '';
 						position: absolute;
@@ -142,11 +165,12 @@ input {
 					}
 
 					& > input {
+						cursor: pointer;
 						border-style: none;
 						font-size: inherit;
 						margin: 0 0 0 5px;
-						cursor: pointer;
 						width: 50px;
+
 						&[type='number'] {
 							cursor: text;
 						}
@@ -157,6 +181,149 @@ input {
 						margin: 2px;
 						line-height: 1;
 					}
+
+					.form-group {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						padding-left: 5px;
+						border-left: 2px solid var(--color);
+
+						& > input {
+							margin: 0 5px;
+						}
+
+						.container {
+							&-general,
+							&-gradient {
+								display: flex;
+								align-items: center;
+								flex-direction: column;
+								justify-content: space-between;
+								padding: 0 10px;
+
+								input[type='radio'] {
+									padding: 0;
+									margin: 0 0 5px;
+								}
+							}
+
+							&-general {
+								border-right: 2px solid var(--color);
+
+								input[type='color'] {
+									border-radius: 0;
+									padding: 0;
+									height: 30px;
+									border: none;
+
+									&[type='color'] {
+										&::-webkit-color-swatch-wrapper {
+											padding: 0;
+										}
+
+										&::-webkit-color-swatch {
+											border: 1px solid var(--color);
+										}
+									}
+								}
+							}
+
+							&-gradient {
+								.gradient-color {
+									position: relative;
+									width: 50px;
+									height: 30px;
+									border: 1px solid var(--color);
+									margin-left: 5px;
+									display: flex;
+									align-items: center;
+									justify-content: start;
+									background-image: linear-gradient(white);
+
+									&::after {
+										content: '';
+										position: absolute;
+										left: 0;
+										right: 0;
+										bottom: -10px;
+										height: 14px;
+									}
+
+									.config {
+										position: absolute;
+										left: 50%;
+										transform: translateX(-50%);
+										display: none;
+										align-items: center;
+										justify-content: start;
+
+										button {
+											width: 20px;
+											height: 20px;
+											padding: 0;
+											margin: 0 5px;
+											border-radius: 50%;
+										}
+
+										input[type='number'] {
+											width: 32px;
+											height: 25px;
+											padding: 2px 5px;
+											margin: 0 2px;
+
+											&[type='number']::-webkit-inner-spin-button,
+											&[type='number']::-webkit-outer-spin-button {
+												-webkit-appearance: none;
+												margin: 0;
+											}
+										}
+									}
+
+									.colors {
+										position: absolute;
+										display: none;
+										z-index: 10;
+										width: 110px;
+										top: 28px;
+										left: 50%;
+										padding: 5px;
+										flex-wrap: wrap;
+										align-items: flex-start;
+										justify-content: center;
+										transform: translateX(-50%);
+										background: rgba(20, 20, 20, 0.8);
+
+										input {
+											border-radius: 0;
+											border: none;
+											padding: 0;
+											margin: 0;
+											width: 25px;
+											height: 25px;
+
+											&[type='color'] {
+												&::-webkit-color-swatch-wrapper {
+													padding: 0;
+												}
+
+												&::-webkit-color-swatch {
+													border: 1px solid white;
+												}
+											}
+										}
+									}
+
+									&:hover {
+										.config,
+										.colors {
+											display: flex;
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 				.tool-btn:hover,
 				.btn--active {
@@ -164,10 +331,13 @@ input {
 				}
 
 				#resize-container {
+					display: none;
 					position: relative;
+
 					&:hover {
 						background-color: transparent;
 					}
+
 					#resize {
 						border-radius: inherit;
 						width: 100%;
@@ -175,47 +345,57 @@ input {
 						margin: 4px;
 						border: var(--border-size) solid var(--color);
 						position: relative;
+
 						&:hover {
 							background-color: var(--tool-btn-hover);
 						}
 					}
 				}
+
 				#upload {
 					width: 80%;
+
 					input {
 						width: 70%;
 						font-size: 14px;
 						font-family: 'Patrick Hand', cursive;
+
 						&::-webkit-file-upload-button {
 							display: none;
 						}
 					}
+
 					button {
 						position: absolute;
 						top: 0;
 						bottom: 0;
-						margin: 4px;
 						right: 5px;
-						border-radius: inherit;
+						margin: 4px;
+						padding: 2px 5px;
 						font-size: 14px;
-						color: var(--color);
-						border: none;
 						text-align: center;
+						border: none;
+						border-radius: inherit;
+						color: var(--color);
 						background-color: var(--background);
 					}
 				}
 
+				#move {
+					display: none;
+				}
+
 				#eraser::before {
-					background: url('../ico/eraser.svg');
+					background: url('../../public/ico/eraser.svg');
 				}
 				#pen::before {
-					background: url('../ico/pen.svg');
+					background: url('../../public/ico/pen.svg');
 				}
 				#line::before {
-					background: url('../ico/grip-lines-vertical.svg');
+					background: url('../../public/ico/grip-lines-vertical.svg');
 				}
 				#upload::before {
-					background: url('../ico/file-import.svg');
+					background: url('../../public/ico/file-import.svg');
 				}
 				#eraser,
 				#pen,
