@@ -272,8 +272,10 @@ class Brusha {
 		this.undoAdd();
 
 		this.isDown = 1;
-		this.prevCoor.x = e.clientX || e.changedTouches[0].pageX;
-		this.prevCoor.y = e.clientY || e.changedTouches[0].pageY;
+		this.prevCoor.x =
+			e.clientX || (e.changedTouches && e.changedTouches[0].pageX);
+		this.prevCoor.y =
+			e.clientY || (e.changedTouches && e.changedTouches[0].pageY);
 
 		const size = this.get.size();
 		const color = this.get.color();
@@ -304,8 +306,10 @@ class Brusha {
 			this.drawLine(x, y, toX, toY, config);
 		}
 
-		this.prevCoor.x = e.clientX || e.changedTouches[0].pageX;
-		this.prevCoor.y = e.clientY || e.changedTouches[0].pageY;
+		this.prevCoor.x =
+			e.clientX || (e.changedTouches && e.changedTouches[0].pageX);
+		this.prevCoor.y =
+			e.clientY || (e.changedTouches && e.changedTouches[0].pageY);
 	};
 
 	penUp = () => {
@@ -321,8 +325,10 @@ class Brusha {
 		this.undoAdd();
 
 		this.isDown = 1;
-		this.prevCoor.x = e.clientX || e.changedTouches[0].pageX;
-		this.prevCoor.y = e.clientY || e.changedTouches[0].pageY;
+		this.prevCoor.x =
+			e.clientX || (e.changedTouches && e.changedTouches[0].pageX);
+		this.prevCoor.y =
+			e.clientY || (e.changedTouches && e.changedTouches[0].pageY);
 	};
 
 	lineMove = (e) => {
@@ -390,8 +396,10 @@ class Brusha {
 	// Move Space Functions
 	moveDown = (e) => {
 		this.isDown = 1;
-		this.prevCoor.x = e.clientX || e.changedTouches[0].pageX;
-		this.prevCoor.y = e.clientY || e.changedTouches[0].pageY;
+		this.prevCoor.x =
+			e.clientX || (e.changedTouches && e.changedTouches[0].pageX);
+		this.prevCoor.y =
+			e.clientY || (e.changedTouches && e.changedTouches[0].pageY);
 	};
 
 	moving = (e) => {
