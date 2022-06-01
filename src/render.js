@@ -120,27 +120,38 @@ const TOOL = [
 		id: '',
 		label: 'Size',
 		change: false,
-		content: `<input id="size" type="number" value="5" min="1" max="400" placeholder="Change the size" />`,
+		content: `<input id="size" type="number" value="5" min="1" max="1000" placeholder="Change the size" />`,
 	},
 	{
 		id: 'upload',
 		label: 'Upload',
 		change: false,
 		content: `
-		<input type="file" id="file-upload" name="filename" accept=".jpg, .png, .svg" multiple />
-		<button class="add-img">Add</button>`,
+		<div class="file-upload-container">
+			<input type="file" id="file-upload" name="filename" accept=".jpg, .png, .svg" multiple />
+			<button class="add-img">Add</button>
+		</div>
+		<div class="file-size-container">
+			<div class="container-width">
+				<span class="tool-label"> Width: </span>
+				<input class="width" type="number" value="120" placeholder="width" />
+			</div>
+		</div>
+		<div class="file-preview"></div>`,
 	},
 	{
 		id: 'resize-container',
 		label: '',
 		change: false,
 		content: `
-		<span class="tool-label"> Width: </span>
-		<input id="w-size" type="number" value="900" min="50" max="2000" placeholder="width" />
-		
-		<span class="tool-label"> Height: </span>
-		<input id="h-size" type="number" value="500" min="50" max="2000" placeholder="height" />
-
+		<div class="container-width">
+			<span class="tool-label"> Width: </span>
+			<input id="w-size" type="number" min="50" placeholder="width" />
+		</div>
+		<div class="container-height">
+			<span class="tool-label"> Height: </span>
+			<input id="h-size" type="number" min="50" placeholder="height" />
+		</div>
 		<div id="resize">Resize</div>`,
 	},
 ];

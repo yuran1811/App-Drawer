@@ -5,7 +5,16 @@ const $$ = document.querySelectorAll.bind(document);
 
 class Brusha {
 	constructor(ele) {
-		this.UNDO_LIMIT = 100;
+		this.constants = {
+			UNDO_LIMIT: 100,
+			MAX_WIDTH: Math.min(innerWidth * 2, 1e4),
+			MAX_HEIGHT: Math.min(innerHeight * 2, 1e4),
+		};
+
+		this.devices = [
+			{ down: 'mousedown', move: 'mousemove', up: 'mouseup' },
+			{ down: 'touchstart', move: 'touchmove', up: 'touchend' },
+		];
 
 		this.canvasEle = ele.canvas;
 		this.colorEle = ele.color;
@@ -27,20 +36,20 @@ class Brusha {
 		this.colorGeneralEle = $('#general-color');
 		this.colorGradientEle = $('.gradient-color');
 
-		this.canvasEle.width = innerWidth;
-		this.canvasEle.height = innerHeight - 60;
+		this.canvasEle.width = this.constants.MAX_WIDTH;
+		this.canvasEle.height = this.constants.MAX_HEIGHT;
+		this.widthEle.value = this.constants.MAX_WIDTH;
+		this.heightEle.value = this.constants.MAX_HEIGHT;
 
 		this.ctx = this.canvasEle.getContext('2d');
 		this.ctx.fillStyle = 'black';
 
 		this.prevConfig = { size: undefined, color: undefined, colorType: 0 };
 		this.prevCoor = { x: undefined, y: undefined };
-
-		this.mouse = { x: undefined, y: undefined };
-		this.coor = { x: 0, y: 0 };
-
 		this.states = { undo: [], redo: [], move: [] };
+		this.mouse = { x: undefined, y: undefined };
 
+		this.isDark = false;
 		this.isDown = false;
 		this.toolState = false;
 
@@ -59,10 +68,8 @@ class Brusha {
 					.getAttribute('color-values')
 					.split(',');
 			},
-			// width: () => this.widthEle.value,
-			// height: () => this.heightEle.value,
-			width: () => innerWidth,
-			height: () => innerHeight - 60,
+			width: () => this.widthEle.value,
+			height: () => this.heightEle.value,
 			theme: () => this.themeSwitchEle.innerHTML,
 			gradientAngle: () => this.gradientAngleEle.value,
 		};
@@ -103,15 +110,19 @@ class Brusha {
 	}
 
 	// Canvas Functions
-	getMousePos({ clientX, clientY }) {
+	getMousePos(e) {
 		const { top, left } = this.canvasEle.getBoundingClientRect();
 		const { x, y } = this.prevCoor;
 
 		return {
 			x: x - left,
 			y: y - top,
-			toX: clientX - left,
-			toY: clientY - top,
+			toX:
+				(e?.changedTouches ? e.changedTouches[0].pageX : e.clientX) -
+				left,
+			toY:
+				(e?.changedTouches ? e.changedTouches[0].pageY : e.clientY) -
+				top,
 		};
 	}
 
@@ -127,14 +138,13 @@ class Brusha {
 	};
 
 	reset = () => {
-		this.ctx.save();
+		const img = this.getCanvasImg();
 		this.clearCanvas();
-		this.ctx.restore();
+		this.drawImage(img);
+		this.removeAllEvent();
 
 		const last = $('.btn--active');
 		last && last.classList.remove('btn--active');
-
-		this.removeAllEvent();
 	};
 
 	resetHandle = () => {
@@ -143,13 +153,10 @@ class Brusha {
 		this.states.undo.length = 0;
 		this.states.redo.length = 0;
 
-		this.coor.x = 0;
-		this.coor.y = 0;
-
-		this.widthEle.value = 900;
-		this.heightEle.value = 500;
-		this.canvasEle.width = 900;
-		this.canvasEle.height = 500;
+		this.canvasEle.width = this.constants.MAX_WIDTH;
+		this.canvasEle.height = this.constants.MAX_HEIGHT;
+		this.widthEle.value = this.constants.MAX_WIDTH;
+		this.heightEle.value = this.constants.MAX_HEIGHT;
 		this.sizeEle.value = 5;
 		this.colorGeneralEle.value = '#000000';
 
@@ -255,8 +262,9 @@ class Brusha {
 		this.ctx.closePath();
 	}
 
-	drawImage(img, x = 0, y = 0) {
-		this.ctx.drawImage(img, x, y);
+	drawImage(img, x = 0, y = 0, width = -1, height = -1) {
+		if (width == -1 || height == -1) this.ctx.drawImage(img, x, y);
+		else this.ctx.drawImage(img, x, y, width, height);
 	}
 
 	// Pen Functions
@@ -264,8 +272,8 @@ class Brusha {
 		this.undoAdd();
 
 		this.isDown = 1;
-		this.prevCoor.x = e.clientX;
-		this.prevCoor.y = e.clientY;
+		this.prevCoor.x = e.clientX || e.changedTouches[0].pageX;
+		this.prevCoor.y = e.clientY || e.changedTouches[0].pageY;
 
 		const size = this.get.size();
 		const color = this.get.color();
@@ -296,8 +304,8 @@ class Brusha {
 			this.drawLine(x, y, toX, toY, config);
 		}
 
-		this.prevCoor.x = e.clientX;
-		this.prevCoor.y = e.clientY;
+		this.prevCoor.x = e.clientX || e.changedTouches[0].pageX;
+		this.prevCoor.y = e.clientY || e.changedTouches[0].pageY;
 	};
 
 	penUp = () => {
@@ -313,8 +321,8 @@ class Brusha {
 		this.undoAdd();
 
 		this.isDown = 1;
-		this.prevCoor.x = e.clientX;
-		this.prevCoor.y = e.clientY;
+		this.prevCoor.x = e.clientX || e.changedTouches[0].pageX;
+		this.prevCoor.y = e.clientY || e.changedTouches[0].pageY;
 	};
 
 	lineMove = (e) => {
@@ -381,24 +389,40 @@ class Brusha {
 
 	// Move Space Functions
 	moveDown = (e) => {
-		this.states.move.push({ type: 'move', data: this.getCanvasImg() });
-		this.prevCoor.x = e.clientX;
-		this.prevCoor.y = e.clientY;
+		this.isDown = 1;
+		this.prevCoor.x = e.clientX || e.changedTouches[0].pageX;
+		this.prevCoor.y = e.clientY || e.changedTouches[0].pageY;
 	};
 
-	moving = () => {};
+	moving = (e) => {
+		if (!this.isDown) return;
 
-	moveUp = (e) => {
 		const { x, y, toX, toY } = this.getMousePos(e);
 
-		this.coor.x += toX - x;
-		this.coor.y += toY - y;
+		this.canvasEle.style.transform = `
+		translate3d(
+			${toX - x}px,
+			${toY - y}px,
+			0px
+		)`;
+	};
 
-		this.clearCanvas();
+	moveUp = (e) => {
+		if (!this.isDown) return;
 
-		const prevState = this.states.move.pop();
-		this.drawImage(prevState.data, this.coor.x, this.coor.y);
+		const { x, y, toX, toY } = this.getMousePos(e);
+		const last = {
+			left: +this.canvasEle.style.left.replace('px', ''),
+			top: +this.canvasEle.style.top.replace('px', ''),
+		};
 
+		Object.assign(this.canvasEle.style, {
+			left: `${last.left + toX - x}px`,
+			top: `${last.top + toY - y}px`,
+			transform: `translate3d(0px, 0px, 0px)`,
+		});
+
+		this.isDown = 0;
 		this.prevCoor.x = this.prevCoor.y = undefined;
 	};
 
@@ -448,40 +472,61 @@ class Brusha {
 
 	// Draw Usage
 	removeAllEvent = () => {
-		this.canvasEle.removeEventListener('mousedown', this.lineDown);
-		this.canvasEle.removeEventListener('mousedown', this.moveDown);
-		this.canvasEle.removeEventListener('mousedown', this.penDown);
+		this.canvasEle.removeEventListener('click', this.drawUpload);
+		this.devices.forEach((_) => {
+			this.canvasEle.removeEventListener(_.down, this.lineDown);
+			this.canvasEle.removeEventListener(_.down, this.moveDown);
+			this.canvasEle.removeEventListener(_.down, this.penDown);
 
-		this.canvasEle.removeEventListener('mousemove', this.moving);
-		this.canvasEle.removeEventListener('mousemove', this.rectMove);
-		document.removeEventListener('mousemove', this.circleMove);
-		document.removeEventListener('mousemove', this.lineMove);
-		document.removeEventListener('mousemove', this.penMove);
+			this.canvasEle.removeEventListener(_.move, this.moving);
+			this.canvasEle.removeEventListener(_.move, this.rectMove);
+			document.removeEventListener(_.move, this.circleMove);
+			document.removeEventListener(_.move, this.lineMove);
+			document.removeEventListener(_.move, this.penMove);
 
-		document.removeEventListener('mouseup', this.lineUp);
-		document.removeEventListener('mouseup', this.moveUp);
-		document.removeEventListener('mouseup', this.penUp);
-
-		this.canvasEle.removeEventListener('click', this.drawImgUpload);
+			document.removeEventListener(_.up, this.lineUp);
+			document.removeEventListener(_.up, this.moveUp);
+			document.removeEventListener(_.up, this.penUp);
+		});
 	};
 
 	resizeHandle = () => {
-		const img = this.getCanvasImg();
+		const { width: a, height: b } = this.canvasEle;
+		const x = +this.widthEle.value;
+		const y = +this.heightEle.value;
+
+		if (x === a && y === b) return;
+
 		this.reset();
-		this.drawImage(img);
 	};
 
 	moveSpaceHandle = () => {
 		this.removeAllEvent();
-
-		this.canvasEle.addEventListener('mousedown', this.moveDown);
-		this.canvasEle.addEventListener('mousemove', this.moving);
-		document.addEventListener('mouseup', this.moveUp);
+		this.devices.forEach((_) => {
+			this.canvasEle.addEventListener(_.down, this.moveDown);
+			this.canvasEle.addEventListener(_.move, this.moving);
+			document.addEventListener(_.up, this.moveUp);
+		});
 	};
 
-	drawImgUpload = (e) => {
+	drawUpload = (e) => {
 		this.undoAdd();
-		this.drawImage(e.target.imgData, e.offsetX, e.offsetY);
+
+		const { img, w, h } = e.target.imgData;
+		const { x, y } = {
+			x: e?.changedTouches ? e.changedTouches[0].pageX : e.offsetX,
+			y: e?.changedTouches ? e.changedTouches[0].pageY : e.offsetY,
+		};
+		const szContainer = $('.file-size-container');
+		const fileSize = {
+			width: () => +szContainer.querySelector('input.width').value,
+			height: () => +szContainer.querySelector('input.height').value,
+		};
+
+		const szW = fileSize.width();
+		const szH = (szW * h) / w;
+
+		this.drawImage(img, x, y, szW, szH);
 	};
 
 	drawUsePen = (type = 'pen') => {
@@ -517,64 +562,131 @@ class Brusha {
 		}
 
 		this.removeAllEvent();
-
-		this.canvasEle.addEventListener('mousedown', this.penDown);
-		document.addEventListener('mousemove', this.penMove);
-		document.addEventListener('mouseup', this.penUp);
+		this.devices.forEach((_) => {
+			this.canvasEle.addEventListener(_.down, this.penDown);
+			document.addEventListener(_.move, this.penMove);
+			document.addEventListener(_.up, this.penUp);
+		});
 	};
 
 	drawUseLine = () => {
 		this.removeAllEvent();
-
-		this.canvasEle.addEventListener('mousedown', this.lineDown);
-		document.addEventListener('mousemove', this.lineMove);
-		document.addEventListener('mouseup', this.lineUp);
+		this.devices.forEach((_) => {
+			this.canvasEle.addEventListener(_.down, this.lineDown);
+			document.addEventListener(_.move, this.lineMove);
+			document.addEventListener(_.up, this.lineUp);
+		});
 	};
 
 	drawUseCircle = () => {
 		this.removeAllEvent();
-
-		this.canvasEle.addEventListener('mousedown', this.lineDown);
-		document.addEventListener('mousemove', this.circleMove);
-		document.addEventListener('mouseup', this.lineUp);
+		this.devices.forEach((_) => {
+			this.canvasEle.addEventListener(_.down, this.lineDown);
+			document.addEventListener(_.move, this.circleMove);
+			document.addEventListener(_.up, this.lineUp);
+		});
 	};
 
 	drawUseRect = () => {
 		this.removeAllEvent();
-
-		this.canvasEle.addEventListener('mousedown', this.lineDown);
-		this.canvasEle.addEventListener('mousemove', this.rectMove);
-		document.addEventListener('mouseup', this.lineUp);
+		this.devices.forEach((_) => {
+			this.canvasEle.addEventListener(_.down, this.lineDown);
+			this.canvasEle.addEventListener(_.move, this.rectMove);
+			document.addEventListener(_.up, this.lineUp);
+		});
 	};
 
 	// App process
 	actions = () => {
 		onkeydown = (e) => {
-			if (e.key == 'z') this.undoDraw();
-			if (e.key == 'y') this.redoDraw();
+			const key = e.key.toLowerCase();
+			const ctrl = e.ctrlKey;
+			const shift = e.shiftKey;
+
+			if (ctrl)
+				switch (key) {
+					case 's':
+						e.preventDefault();
+						break;
+
+					case 'z':
+						e.preventDefault();
+						this.undoDraw();
+						break;
+
+					case 'y':
+						e.preventDefault();
+						this.redoDraw();
+						break;
+
+					default:
+						e.preventDefault();
+						break;
+				}
+			else
+				switch (key) {
+					case 'b':
+						e.preventDefault();
+						this.penEle.click();
+						break;
+
+					case 'l':
+						e.preventDefault();
+						this.lineEle.click();
+						break;
+
+					case 'c':
+						e.preventDefault();
+						this.circleEle.click();
+						break;
+
+					case 'r':
+						e.preventDefault();
+						this.rectEle.click();
+						break;
+
+					case 'e':
+						e.preventDefault();
+						this.eraserEle.click();
+						break;
+
+					case ' ':
+						e.preventDefault();
+						this.moveEle.click();
+						break;
+
+					case '=':
+						e.preventDefault();
+						this.sizeEle.value = +this.sizeEle.value + 1;
+						break;
+
+					case '-':
+						e.preventDefault();
+						if (this.sizeEle.value > 1)
+							this.sizeEle.value = +this.sizeEle.value - 1;
+						break;
+
+					default:
+						break;
+				}
 		};
 
-		onresize = this.resizeHandle;
-
-		let isDark = 0;
 		this.themeSwitchEle.onclick = () => {
-			document.body.classList.toggle('dark');
+			this.isDark = !this.isDark;
+			!this.isDark
+				? (this.themeSwitchEle.innerHTML = 'Dark')
+				: (this.themeSwitchEle.innerHTML = 'Light');
 
-			if (isDark) {
-				this.themeSwitchEle.innerHTML = 'Dark';
-				isDark = 0;
-			} else {
-				this.themeSwitchEle.innerHTML = 'Light';
-				isDark = 1;
-			}
+			document.body.classList.toggle('dark', this.isDark);
 		};
 
-		this.canvasEle.addEventListener('mousemove', () => {
-			this.isDown && this.menuIconEle.classList.remove('active');
-		});
-
-		this.canvasEle.addEventListener('mouseup', () => {
-			this.toolState && this.menuIconEle.classList.add('active');
+		this.devices.forEach((_) => {
+			this.canvasEle.addEventListener(_.move, () => {
+				this.isDown && this.menuIconEle.classList.remove('active');
+			});
+			this.canvasEle.addEventListener(_.up, () => {
+				this.toolState && this.menuIconEle.classList.add('active');
+			});
 		});
 
 		$('.tool-container').ondblclick = () => {
@@ -606,6 +718,10 @@ class Brusha {
 		this.moveEle.onclick = this.moveSpaceHandle;
 		this.eraserEle.onclick = () => this.drawUsePen('eraser');
 
+		this.menuIconEle.addEventListener('click', (e) => {
+			e.target.classList.toggle('active');
+			this.toolState = this.menuIconEle.className.includes('active');
+		});
 		this.colorEle.querySelector('.add-point').onclick = () => {
 			const colors = this.colorGradientEle.querySelector('.colors');
 			const inps = [
@@ -620,29 +736,57 @@ class Brusha {
 				oncontextmenu="app.colorInputHandle.oncontextmenu(event)"
 			/>`;
 		};
-
 		this.fileUploadEle.onchange = (e) => {
 			const { files } = e.target;
-			const img = new Image();
+			const addImgBtn = $('.add-img');
+			const filePreview = $('.file-preview');
 
-			img.src = URL.createObjectURL(files[0]);
-			img.onload = () => {
-				$('.add-img').onclick = () => {
-					this.removeAllEvent();
+			[...files].forEach((file) => {
+				const item = document.createElement('div');
+				const itemPreview = document.createElement('div');
+				const url = URL.createObjectURL(file);
 
-					this.canvasEle.imgData = img;
-					this.canvasEle.addEventListener(
-						'click',
-						this.drawImgUpload
-					);
+				const configEle = (el, className) => {
+					el.className = className;
+					el.dataset.imgurl = url;
+
+					el.style.background = `url(${url})`;
+					el.style.backgroundSize = 'cover';
+					el.style.backgroundPosition = 'center';
+					el.style.backgroundRepeat = 'no-repeat';
+				};
+
+				configEle(item, 'item');
+				configEle(itemPreview, 'item-preview');
+
+				item.onclick = (e) => {
+					const last = filePreview.querySelector('.item.select');
+					last && last.classList.remove('select');
+
+					e.target.classList.add('select');
+				};
+
+				item.appendChild(itemPreview);
+				filePreview.appendChild(item);
+			});
+
+			addImgBtn.onclick = () => {
+				const selectImg = filePreview.querySelector('.item.select');
+				if (!selectImg) return;
+
+				this.removeAllEvent();
+
+				const img = new Image();
+				img.src = selectImg.dataset.imgurl;
+				img.onload = (e) => {
+					const w = e.target.width;
+					const h = e.target.height;
+
+					this.canvasEle.imgData = { img, w, h };
+					this.canvasEle.addEventListener('click', this.drawUpload);
 				};
 			};
 		};
-
-		this.menuIconEle.addEventListener('click', (e) => {
-			e.target.classList.toggle('active');
-			this.toolState = this.menuIconEle.className.includes('active');
-		});
 	};
 }
 

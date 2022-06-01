@@ -4,7 +4,7 @@
 
 ## Features:
 
--   [x] Infinite workspace
+-   [x] Infinite workspace (can be modified)
 -   [x] Draw freestyle
 -   [x] Draw lines
 -   [x] Draw circles
