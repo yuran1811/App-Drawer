@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
 
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
 :root {
 	--border-size: 1.2px;
 	--border-color: #000000;
@@ -526,28 +530,28 @@ input {
 					}
 
 					&#circle::before {
-						background: url('../../public/ico/circle-ico.svg');
+						background: url('./ico/circle-ico.svg');
 					}
 					&#rect::before {
-						background: url('../../public/ico/rect-ico.svg');
+						background: url('./ico/rect-ico.svg');
 					}
 					&#eraser::before {
-						background: url('../../public/ico/eraser-ico.svg');
+						background: url('./ico/eraser-ico.svg');
 					}
 					&#pen::before {
-						background: url('../../public/ico/pen-ico.svg');
+						background: url('./ico/pen-ico.svg');
 					}
 					&#line::before {
-						background: url('../../public/ico/line-ico.svg');
+						background: url('./ico/line-ico.svg');
 					}
 					&#upload::before {
-						background: url('../../public/ico/upload-ico.svg');
+						background: url('./ico/upload-ico.svg');
 					}
 					&#move::before {
-						background: url('../../public/ico/move-ico.svg');
+						background: url('./ico/move-ico.svg');
 					}
 					&#reset::before {
-						background: url('../../public/ico/reset-ico.svg');
+						background: url('./ico/reset-ico.svg');
 					}
 
 					&#circle,

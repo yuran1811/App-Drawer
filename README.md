@@ -1,8 +1,8 @@
 # Brusha
 
-## This is a free, lightweight app helps drawing
+## A free, lightweight and blazing fast drawing app
 
-## Features:
+## Features
 
 -   [x] Infinite workspace (can be modified)
 -   [x] Draw freestyle
