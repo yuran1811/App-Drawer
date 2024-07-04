@@ -11,7 +11,7 @@
 
 ## Live Demo
 
-- Official site: [https://scorie.vercel.app/](https://scorie.vercel.app/)
+- Official site: [https://yuran1811.github.io/Brusha/](https://yuran1811.github.io/Brusha/)
 
 ## Features
 
