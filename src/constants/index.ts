@@ -1,45 +1,45 @@
-const TOOL = [
-	{
-		id: 'switch-mode',
-		label: 'Switch Mode',
-		change: false,
-		content: ``,
-	},
-	{
-		id: 'reset',
-		label: 'Reset',
-		change: false,
-		content: ``,
-	},
-	{
-		id: 'move',
-		label: 'Move',
-		change: true,
-		content: ``,
-	},
-	{
-		id: 'eraser',
-		label: 'Eraser',
-		change: true,
-		content: ``,
-	},
-	{
-		id: 'pen',
-		label: 'Brush',
-		change: true,
-		content: ``,
-	},
-	{
-		id: 'line',
-		label: 'Line',
-		change: true,
-		content: ``,
-	},
-	{
-		id: 'circle',
-		label: 'Circle',
-		change: true,
-		content: `
+export const TOOL = [
+  {
+    id: 'switch-mode',
+    label: 'Switch Mode',
+    change: false,
+    content: ``,
+  },
+  {
+    id: 'reset',
+    label: 'Reset',
+    change: false,
+    content: ``,
+  },
+  {
+    id: 'move',
+    label: 'Move',
+    change: true,
+    content: ``,
+  },
+  {
+    id: 'eraser',
+    label: 'Eraser',
+    change: true,
+    content: ``,
+  },
+  {
+    id: 'pen',
+    label: 'Brush',
+    change: true,
+    content: ``,
+  },
+  {
+    id: 'line',
+    label: 'Line',
+    change: true,
+    content: ``,
+  },
+  {
+    id: 'circle',
+    label: 'Circle',
+    change: true,
+    content: `
 		<div class="form-group">
 			<label for="circle-fill">Fill</label>
 			<input id="circle-fill" name="circle" type="radio" value="1" checked />
@@ -47,12 +47,12 @@ const TOOL = [
 			<label for="circle-nofill">No fill</label>
 			<input id="circle-nofill" name="circle" type="radio" value="0" />
 		</div>`,
-	},
-	{
-		id: 'rect',
-		label: 'Rect',
-		change: true,
-		content: `
+  },
+  {
+    id: 'rect',
+    label: 'Rect',
+    change: true,
+    content: `
 		<div class="form-group">
 			<label for="rect-fill">Fill</label>
 			<input id="rect-fill" name="rect" type="radio" value="1" checked />
@@ -60,12 +60,12 @@ const TOOL = [
 			<label for="rect-nofill">No fill</label>
 			<input id="rect-nofill" name="rect" type="radio" value="0" />
 		</div>`,
-	},
-	{
-		id: 'color',
-		label: 'Color',
-		change: false,
-		content: `
+  },
+  {
+    id: 'color',
+    label: 'Color',
+    change: false,
+    content: `
 		<div class="form-group">
 			<div class="container-general">
 				<label for="generalType">General</label>
@@ -115,18 +115,18 @@ const TOOL = [
 				</div>
 			</div>
 		</div>`,
-	},
-	{
-		id: '',
-		label: 'Size',
-		change: false,
-		content: `<input id="size" type="number" value="5" min="1" max="1000" placeholder="Change the size" />`,
-	},
-	{
-		id: 'upload',
-		label: 'Upload',
-		change: false,
-		content: `
+  },
+  {
+    id: '',
+    label: 'Size',
+    change: false,
+    content: `<input id="size" type="number" value="5" min="1" max="1000" placeholder="Change the size" />`,
+  },
+  {
+    id: 'upload',
+    label: 'Upload',
+    change: false,
+    content: `
 		<div class="file-upload-container">
 			<input type="file" id="file-upload" name="filename" accept=".jpg, .png, .svg" multiple />
 			<button class="add-img">Add</button>
@@ -138,12 +138,12 @@ const TOOL = [
 			</div>
 		</div>
 		<div class="file-preview"></div>`,
-	},
-	{
-		id: 'resize-container',
-		label: '',
-		change: false,
-		content: `
+  },
+  {
+    id: 'resize-container',
+    label: '',
+    change: false,
+    content: `
 		<div class="container-width">
 			<span class="tool-label"> Width: </span>
 			<input id="w-size" type="number" min="50" placeholder="width" />
@@ -153,31 +153,5 @@ const TOOL = [
 			<input id="h-size" type="number" min="50" placeholder="height" />
 		</div>
 		<div id="resize">Resize</div>`,
-	},
+  },
 ];
-
-const toolContainerHTML = TOOL.map(
-	(item) => `
-	<div
-		class="tool-btn ${item.change ? 'btn--change' : ''}"
-		${item.id ? `id="${item.id}"` : ''}
-	>
-	${item.label ? `<span class="tool-label"> ${item.label} </span>` : ''}
-	${item.content ? `${item.content}` : ''}
-	</div>`
-).join('');
-
-const mainHTML = `
-	<div class="canvas">
-		<canvas id="draw"></canvas>
-	</div>
-	<div class="menu">
-		<div class="menu-ico"></div>
-		<div class="menu-tool">
-			<div class="tool-container">
-				${toolContainerHTML}
-			</div>
-		</div>
-	</div>`;
-
-document.querySelector('.main').innerHTML = mainHTML;

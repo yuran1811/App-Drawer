@@ -1,0 +1,84 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.loading {
+  padding-block: 16px;
+}
+
+.input-container {
+  justify-content: center;
+  display: flex;
+  gap: 4px;
+  margin-block: 32px;
+}
+
+.gallery {
+  --size: 60px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--size));
+  gap: 4px;
+  grid-auto-rows: var(--size);
+  border: 1px solid red;
+
+  justify-content: center;
+  height: 0;
+  place-items: start center;
+
+  &:has(.item:hover) {
+    .item:not(:hover) {
+      opacity: 0.6;
+    }
+  }
+
+  &.gallery--success {
+    height: auto;
+    padding-bottom: calc(var(--size));
+  }
+}
+
+.item {
+  width: calc(var(--size) * 2);
+  height: calc(var(--size) * 2);
+  grid-column: auto / span 2;
+
+  color: white;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+
+  transition: all 0.3s ease;
+
+  &:hover {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    z-index: 1;
+  }
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moved-left {
+  grid-column: 2 / span 2;
+}
+
+.gallery--honeycomb {
+  --height: calc(var(--size) * 2 * 1.1543);
+  margin-top: 40px;
+  grid-auto-rows: calc(var(--height) * 3 / 4);
+
+  .item {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    height: var(--height);
+
+    &:hover {
+      clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0 100%, 0 50%);
+    }
+  }
+
+  &.gallery--success {
+    padding-bottom: calc(var(--height) / 4);
+  }
+}

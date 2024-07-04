@@ -1,1 +1,6 @@
-{"printWidth":125,"useTabs":false,"singleQuote":true,"plugins":["prettier-plugin-tailwindcss"],"tailwindConfig":"./tailwind.config.cjs"}
+{
+  "printWidth": 125,
+  "useTabs": false,
+  "singleQuote": true,
+  "plugins": ["prettier-plugin-tailwindcss"]
+}

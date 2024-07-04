@@ -275,16 +275,6 @@ Mode.onclick = () => {
   }
 };
 
-// Menu
-$('.menu-ico').onclick = (e) => {
-  e.target.classList.toggle('active');
-  $('.menu-tool').classList.toggle('active');
-};
-$('.tool-container').ondblclick = () => {
-  $('.menu-tool').classList.remove('active');
-  $('.menu-ico').classList.remove('active');
-};
-
 // Undo
 onkeydown = (e) => {
   if (e.key == 'z') undoDraw();
