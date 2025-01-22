@@ -12,7 +12,7 @@ export default function App() {
   return (
     <>
       <div className="canvas">
-        <canvas id="draw"></canvas>
+        <canvas id="draw" />
       </div>
       <ToolContainer />
     </>

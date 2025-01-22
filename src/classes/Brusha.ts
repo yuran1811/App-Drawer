@@ -729,10 +729,10 @@ export class Brusha {
     this.moveEle.onclick = this.moveSpaceHandle;
     this.eraserEle.onclick = () => this.drawUsePen('eraser');
 
-    this.menuIconEle.addEventListener('click', (e: any) => {
+    this.menuIconEle.onclick = (e: any) => {
       e.target.classList.toggle('active');
       this.toolState = this.menuIconEle.className.includes('active');
-    });
+    };
     this.colorEle &&
       ((this.colorEle.querySelector('.add-point')! as HTMLElement).onclick = () => {
         const colors = this.colorGradientEle.querySelector('.colors');

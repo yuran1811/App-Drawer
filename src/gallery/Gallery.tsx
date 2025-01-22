@@ -1,4 +1,4 @@
-import './styles.css';
+import './style.css';
 
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 

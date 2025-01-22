@@ -151,10 +151,10 @@ input {
 
   .menu {
     &-ico {
-      @apply fixed right-8 top-6 flex size-10 cursor-pointer items-center justify-center rounded-md bg-slate-100 transition-all;
+      @apply fixed right-6 top-6 size-10 rotate-0 scale-110 cursor-pointer rounded-lg bg-slate-100 mix-blend-difference transition-all duration-300 before:invisible before:absolute before:inset-0 before:animate-ping before:rounded-lg before:bg-sky-500 before:content-[''];
 
       &.active {
-        background-color: #ffc2c2;
+        @apply -rotate-180 scale-75 before:visible;
 
         & + .menu-tool {
           @apply transform-none;
@@ -163,7 +163,7 @@ input {
     }
 
     &-tool {
-      @apply fixed right-0 top-20 transition-all;
+      @apply fixed right-0 top-16 transition-all;
       margin: 5px 15px 0 0;
       transform: translateX(200%);
 
